@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/vwMain"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.immortplanet.drawlove.MainActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="313dp"
+        android:layout_height="29dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="35dp"
+        android:text='"A picture is worth thousands words"'
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="italic"
+        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="22dp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="261dp"
+        android:layout_height="69dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="45dp"
+        android:fontFamily="cursive"
+        android:text="DrawLove"
+        android:textAlignment="center"
+        android:textColor="@color/colorAccent"
+        android:textSize="60sp"
+        android:textStyle="bold"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <Button
+        android:id="@+id/btLogin"
+        android:layout_width="128dp"
+        android:layout_height="42dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        android:text="Login"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_editor_absoluteX="240dp" />
+
+    <TextView
+        android:id="@+id/txtRegister"
+        android:layout_width="191dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="16dp"
+        android:text="Register your account"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        tools:layout_editor_absoluteY="465dp" />
+</android.support.constraint.ConstraintLayout>

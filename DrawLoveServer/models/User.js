@@ -1,0 +1,17 @@
+var mongoose = require('mongoose');
+
+var Schema = mongoose.Schema;
+
+var UserSchema = Schema(
+    {
+        chatID: {type: String, required: true, unique: true},
+        passwordHash: {type: String, required: true},
+        salt: {type: String, required: true},
+        email: {type: String}
+    },
+    {
+        collection: "tbUser"
+    }
+);
+
+module.exports = mongoose.model('User', UserSchema);

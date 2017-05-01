@@ -1,0 +1,59 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.immortplanet.drawlove.AboutFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textAlignment="center">
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="277dp"
+            android:layout_height="72dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="64dp"
+            android:fontFamily="cursive"
+            android:text="DrawLove"
+            android:textAlignment="center"
+            android:textSize="60sp"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txtVersion"
+            android:layout_width="166dp"
+            android:layout_height="36dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="23dp"
+            android:fontFamily="casual"
+            android:textAlignment="center"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="284dp"
+            android:layout_height="123dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="58dp"
+            android:fontFamily="casual"
+            android:text="This program is made as a present to Lợn cưng from her beloved Ỉn xấu tính. Feel free to use and share us your opinions ;)"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtVersion"
+            tools:layout_editor_absoluteY="220dp"
+            tools:layout_editor_absoluteX="56dp" />
+    </android.support.constraint.ConstraintLayout>
+</FrameLayout>

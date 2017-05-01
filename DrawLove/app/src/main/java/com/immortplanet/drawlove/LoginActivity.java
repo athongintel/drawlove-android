@@ -1,0 +1,103 @@
+package com.immortplanet.drawlove;
+
+import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class LoginActivity extends Activity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //-- set fullscreen
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        setContentView(R.layout.activity_login);
+        final EditText txtChatID = (EditText)findViewById(R.id.txtChatID);
+        final EditText txtPassword = (EditText)findViewById(R.id.txtPassword);
+        final CheckBox chRemember = (CheckBox) findViewById(R.id.chRemember);
+        final ProgressBar prLogin = (ProgressBar)findViewById(R.id.prLogin);
+
+        String chatID="";
+        String password="";
+
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            chatID = (String) bundle.get("chatID");
+            password = (String) bundle.get("password");
+        }
+
+        txtChatID.setText(chatID);
+        txtPassword.setText(password);
+        prLogin.setVisibility(View.GONE);
+
+        final Button btLogin = (Button)findViewById(R.id.btLogin);
+        btLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //-- authentication
+                txtChatID.setEnabled(false);
+                txtPassword.setEnabled(false);
+                chRemember.setEnabled(false);
+                btLogin.setEnabled(false);
+                prLogin.setVisibility(View.VISIBLE);
+
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("chatID", txtChatID.getText().toString());
+                    obj.put("password", txtPassword.getText().toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                HttpRequest request = new HttpRequest("POST", "/login", obj, new HttpCallback() {
+                    @Override
+                    public void finished(JSONObject jsonObject) {
+                        //-- authenticated
+                        prLogin.setVisibility(View.GONE);
+                        Intent iChat = new Intent(getApplicationContext(), ChatActivity.class);
+                        startActivity(iChat);
+                    }
+                }, new HttpCallback() {
+                    @Override
+                    public void finished(JSONObject jsonObject) {
+                        prLogin.setVisibility(View.GONE);
+                        txtChatID.setEnabled(true);
+                        txtPassword.setEnabled(true);
+                        chRemember.setEnabled(true);
+                        btLogin.setEnabled(true);
+
+                        String reasonMessage = "Unknown error";
+                        if (jsonObject != null){
+                            try {
+                                reasonMessage = jsonObject.get("reasonMessage").toString();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        SimpleDialog dialog = new SimpleDialog(LoginActivity.this, "Error", reasonMessage, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.show();
+                    }
+                });
+                request.execute();
+            }
+        });
+    }
+}
