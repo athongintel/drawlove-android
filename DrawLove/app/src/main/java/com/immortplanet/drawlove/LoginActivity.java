@@ -5,12 +5,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+
+import com.immortplanet.drawlove.util.HttpCallback;
+import com.immortplanet.drawlove.util.HttpRequest;
+import com.immortplanet.drawlove.util.SimpleDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,6 +71,7 @@ public class LoginActivity extends Activity {
                         prLogin.setVisibility(View.GONE);
                         Intent iChat = new Intent(getApplicationContext(), ChatActivity.class);
                         startActivity(iChat);
+                        finish();
                     }
                 }, new HttpCallback() {
                     @Override

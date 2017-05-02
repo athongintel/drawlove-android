@@ -17,6 +17,22 @@ router.route('/')
 				res.status(500).json({});
 			}
 		});
+	})
+	.post(function(req, res){
+		var groupName = req.body['name'];
+		if (groupName){
+			GroupServices.addGroup(req.session['currentUser']._id, groupName, function(err, group){
+				if (!err && group){
+					res.status(200).json(group);
+				}
+				else{
+					res.status(500).json({reasonMessage: err});
+				}
+			});
+		}
+		else{
+			res.status(400).json({});
+		}
 	});
 
 module.exports = router;

@@ -18,9 +18,27 @@ router.route('/login')
 			}
 			else{
 				req.session['currentUser'] = user;
+				UserServices.activeUsers[user._id] = user;
+				//-- TODO: notify to this user's current active friends
+
 				res.status(200).json({});
 			}
 		});
+	});
+
+router.route('/logout')
+	.get(function(req, res){
+		var user = req.session['currentUser'];
+		if (user){
+			UserServices.activeUsers[user._id] = null;
+			req.session['currentUser'] = null;
+			//-- TODO: notify to this user's current active friends
+
+			res.status(200).json({});
+		}
+		else{
+			res.status(400).json({"reasonMessage" : "not logged in"})
+		}
 	});
 
 router.route('/register')

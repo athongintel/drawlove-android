@@ -2,10 +2,60 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.immortplanet.drawlove.FriendFragment">
+    tools:context="com.immortplanet.drawlove.fragment.FriendFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/friend_frame"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"></FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btSearch"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:src="@drawable/fr_0" />
+
+            <ImageButton
+                android:id="@+id/btFriend"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:src="@drawable/fr_1" />
+
+            <ImageButton
+                android:id="@+id/btRequest"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:src="@drawable/fr_3" />
+
+            <ImageButton
+                android:id="@+id/btNotification"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:src="@drawable/fr_2" />
+
+        </LinearLayout>
+    </LinearLayout>
+
 </FrameLayout>

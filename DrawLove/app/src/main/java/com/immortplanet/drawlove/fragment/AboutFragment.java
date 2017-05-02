@@ -1,4 +1,4 @@
-package com.immortplanet.drawlove;
+package com.immortplanet.drawlove.fragment;
 
 
 import android.app.Fragment;
@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.immortplanet.drawlove.R;
 
 
 /**
@@ -32,7 +34,7 @@ public class AboutFragment extends Fragment {
         try {
             PackageInfo pInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
             String version = pInfo != null? pInfo.versionName : "";
-            txtVersion.setText("Version " + version);
+            txtVersion.setText("Ver. " + version);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }

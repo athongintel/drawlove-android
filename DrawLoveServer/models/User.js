@@ -7,7 +7,9 @@ var UserSchema = Schema(
         chatID: {type: String, required: true, unique: true},
         passwordHash: {type: String, required: true},
         salt: {type: String, required: true},
-        email: {type: String}
+        email: {type: String},
+        isActivated: {type: Boolean},
+        friends : [{type: Schema.ObjectId, ref: 'User'}]
     },
     {
         collection: "tbUser"

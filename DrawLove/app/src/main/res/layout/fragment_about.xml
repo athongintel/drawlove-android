@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.immortplanet.drawlove.AboutFragment">
+    tools:context="com.immortplanet.drawlove.fragment.AboutFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -37,6 +37,7 @@
             android:layout_marginTop="23dp"
             android:fontFamily="casual"
             android:textAlignment="center"
+            android:textSize="14sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView4" />
@@ -47,13 +48,28 @@
             android:layout_height="123dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginTop="58dp"
+            android:layout_marginTop="34dp"
             android:fontFamily="casual"
             android:text="This program is made as a present to Lợn cưng from her beloved Ỉn xấu tính. Feel free to use and share us your opinions ;)"
+            android:textSize="18sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtVersion"
-            tools:layout_editor_absoluteY="220dp"
-            tools:layout_editor_absoluteX="56dp" />
+            app:layout_constraintTop_toBottomOf="@+id/txtVersion" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="299dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:text="Copyright ImmortPlanet 2017"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:layout_editor_absoluteX="-22dp"
+            tools:layout_editor_absoluteY="471dp" />
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>

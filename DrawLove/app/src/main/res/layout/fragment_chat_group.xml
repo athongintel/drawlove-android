@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.immortplanet.drawlove.ChatGroupFragment">
+    tools:context="com.immortplanet.drawlove.fragment.ChatGroupFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -12,7 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:numColumns="3"
-        android:stretchMode="columnWidth"/>
+        android:stretchMode="columnWidth"
+        android:padding="10dp"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="10dp"/>
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

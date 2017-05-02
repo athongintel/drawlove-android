@@ -8,6 +8,11 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.WindowManager;
 
+import com.immortplanet.drawlove.fragment.AboutFragment;
+import com.immortplanet.drawlove.fragment.ChatGroupFragment;
+import com.immortplanet.drawlove.fragment.FriendFragment;
+import com.immortplanet.drawlove.fragment.SettingFragment;
+
 public class ChatActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 

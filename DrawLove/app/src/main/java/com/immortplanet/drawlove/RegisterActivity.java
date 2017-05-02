@@ -1,12 +1,9 @@
 package com.immortplanet.drawlove;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -15,20 +12,14 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
+
+import com.immortplanet.drawlove.util.HttpCallback;
+import com.immortplanet.drawlove.util.HttpRequest;
+import com.immortplanet.drawlove.util.SimpleDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-
-import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
 
 public class RegisterActivity extends Activity {
 
@@ -82,19 +73,21 @@ public class RegisterActivity extends Activity {
                         public void finished(JSONObject jsonObject) {
                             prRegister.setVisibility(View.GONE);
 
-                            Intent iLogin = new Intent(RegisterActivity.this, LoginActivity.class);
-                            Bundle bundle = new Bundle();
+                            final Intent iLogin = new Intent(RegisterActivity.this, LoginActivity.class);
+                            final Bundle bundle = new Bundle();
                             bundle.putString("chatID", txtChatID.getText().toString());
                             bundle.putString("password", txtPassword.getText().toString());
                             iLogin.putExtras(bundle);
 
-                            btRegister.setEnabled(true);
-                            txtChatID.setText("");
-                            txtPassword.setText("");
-                            txtRePassword.setText("");
-                            txtEmail.setText("");
+                            SimpleDialog dialog = new SimpleDialog(RegisterActivity.this, "Success", "Registration success. Please activate your account by mail.", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    startActivity(iLogin, bundle);
+                                }
+                            });
+                            dialog.show();
 
-                            startActivity(iLogin, bundle);
                         }
                     }, new HttpCallback() {
                         @Override
@@ -135,6 +128,7 @@ public class RegisterActivity extends Activity {
                             dialog.dismiss();
                         }
                     });
+                    dialog.show();
                 }
             }
         });

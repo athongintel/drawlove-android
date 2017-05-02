@@ -1,4 +1,4 @@
-package com.immortplanet.drawlove;
+package com.immortplanet.drawlove.util;
 
 import org.json.JSONObject;
 
