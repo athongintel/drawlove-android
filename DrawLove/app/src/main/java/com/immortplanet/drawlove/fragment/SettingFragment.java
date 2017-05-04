@@ -49,7 +49,6 @@ public class SettingFragment extends Fragment {
         txtJoinedDate.setText(u.joinedDate);
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -86,39 +85,16 @@ public class SettingFragment extends Fragment {
 
         User user = (User) DataSingleton.getDataSingleton().data.get("currentUser");
         if (user == null){
-            HttpRequest request = new HttpRequest("GET", "/user", null, new HttpCallback() {
+            SimpleDialog dialog = new SimpleDialog(getActivity(), "Error", "Session expired. Please login again.", new DialogInterface.OnClickListener() {
                 @Override
-                public void finished(JSONObject jsonObject) {
-                    try {
-                        User _user = new User();
-                        _user.chatID = jsonObject.getString("chatID");
-                        _user.chatID = jsonObject.getString("chatID");
-
-                        Calendar calendar = Calendar.getInstance();
-                        long milliSeconds = Long.parseLong(jsonObject.getString("_id").substring(0, 8), 16)*1000;
-                        calendar.setTimeInMillis(milliSeconds);
-                        DateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
-                        _user.joinedDate = dateFormatter.format(calendar.getTime());
-                        _user.email = jsonObject.getString("email");
-                        DataSingleton.getDataSingleton().data.put("currentUser", _user);
-                        updateUI(_user);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }, new HttpCallback() {
-                @Override
-                public void finished(JSONObject jsonObject) {
-                    SimpleDialog dialog = new SimpleDialog(getActivity(), "Error", "Cannot load user's info", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    dialog.show();
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    Intent iLogin = new Intent(getActivity(), LoginActivity.class);
+                    startActivity(iLogin);
+                    getActivity().finish();
                 }
             });
-            request.execute();
+            dialog.show();
         }
         else{
             updateUI(user);

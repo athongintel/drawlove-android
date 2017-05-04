@@ -124,16 +124,6 @@ public class ChatGroupFragment extends Fragment {
         }
 
         @Override
-        public long getItemId(int position) {
-            if (position < arrayList.size()){
-                return arrayList.get(position).id;
-            }
-            else{
-                return -1;
-            }
-        }
-
-        @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View groupView = null;
             View.OnClickListener onClickListener = null;

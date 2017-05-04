@@ -21,7 +21,7 @@ router.route('/login')
 				UserServices.activeUsers[user._id] = user;
 				//-- TODO: notify to this user's current active friends
 
-				res.status(200).json({});
+				res.status(200).json(user);
 			}
 		});
 	});

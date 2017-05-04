@@ -24,24 +24,30 @@ var UserServices = {
 		});
 	},
 
-	requestFriend: function(senderID, accepterChatID, cb){
-		User.findOne({chatID: accepterChatID}, function(err, doc){
-			if (!err && doc){
-				var request = new Request({sender: senderID, accepter: doc._id, type: "friend", status: "pending"});
-				request.save(cb);
-			}
-			else{
-				cb("Cannot find user");
-			}
-		});
+	requestFriend: function(senderID, receiverID, cb){
+		if (senderID == receiverID){
+			cb("Cannot make friend to yourself");
+		}
+		else{
+			User.findById(receiverID, function(err, doc){
+				if (!err && doc){
+					//-- TODO : check states
+					var request = new Request({sender: senderID, receiver: doc._id, type: "friend", status: "pending"});
+					request.save(cb);
+				}
+				else{
+					cb("Cannot find user");
+				}
+			});
+		}
 	},
 
 	getRequestFriend: function(userID, cb){
-		Request.find({sender: userID}).populate('sender').populate('accepter').exec(cb);
+		Request.find({sender: userID}).exec(cb);
 	},
 
 	getFriendRequest: function(userID, cb){
-
+		Request.find({receiver: userID}).exec(cb);
 	},
 
 	checkChatID : function(chatID, cb){
@@ -55,7 +61,7 @@ var UserServices = {
 		});
 	},
 
-	authenticateUser : function(chatID, password, cb){
+	authenticateUser: function(chatID, password, cb){
 		User.findOne({chatID: chatID}, function(err, user){
 			if (!err && user){
 				if (user.isActivated){
@@ -79,6 +85,10 @@ var UserServices = {
 				cb("ChatID not existed");
 			}
 		});
+	},
+
+	getAllByChatID: function(search, cb){
+		User.find({chatID: {$regex: search}, isActivated: true}, cb);
 	}
 
 };

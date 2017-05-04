@@ -11,6 +11,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
+import com.immortplanet.drawlove.model.DataSingleton;
+import com.immortplanet.drawlove.model.User;
 import com.immortplanet.drawlove.util.HttpCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
 import com.immortplanet.drawlove.util.SimpleDialog;
@@ -69,6 +71,8 @@ public class LoginActivity extends Activity {
                     public void finished(JSONObject jsonObject) {
                         //-- authenticated
                         prLogin.setVisibility(View.GONE);
+                        User currentUser = new User(jsonObject);
+                        DataSingleton.getDataSingleton().data.put("currentUser", currentUser);
                         Intent iChat = new Intent(getApplicationContext(), ChatActivity.class);
                         startActivity(iChat);
                         finish();

@@ -11,24 +11,28 @@ router.route('/')
 		res.status(200).json(req.session['currentUser']);
 	});
 
-router.route('/request_friend')
-	.get(function(req, res){
-		UserServices.getRequestFriend(userID, function(err, docs){
+router.route('/search')
+	.post(function(req, res){
+		var search = req.body['search'];
+		UserServices.getAllByChatID(search, function(err, docs){
 			if (!err && docs){
-				res.status(200).json({requests: docs});
+				res.status(200).json({"users" : docs});
 			}
 			else{
 				res.status(500).json({reasonMessage: err});
 			}
 		});
-	})
+	});
+
+router.route('/request/friend')
 	.post(function(req, res){
 		//-- TODO: add new friend request
-		var chatID = req.body['chatID'];
-		if (chatID){
-			UserServices.requestFriend(req.session['currentUser']._id, chatID, function(err){
+		var userID = req.body['userID'];
+		var requestType = "friend";
+		if (userID){
+			UserServices.requestFriend(req.session['currentUser']._id, userID, function(err, request){
 				if (!err){
-					res.status(200).json({});
+					res.status(200).json(request);
 				}
 				else{
 					res.status(500).json({reasonMessage: err});
@@ -40,12 +44,22 @@ router.route('/request_friend')
 		}
 	});
 
-router.route('/friend_request')
+router.route('/request/all')
 	.get(function(req, res){
 		//-- get all friend requests received
-		UserServices.getFriendRequest(req.session['currentUser']._id, function(err, docs){
-			if (!err && docs){
-				res.status(200).json({requests: docs});
+		var result  = {};
+		UserServices.getRequestFriend(req.session['currentUser']._id, function(err, requests){
+			if (!err && requests){
+				result["requests"] = requests;
+				UserServices.getFriendRequest(req.session['currentUser']._id, function(err, friendRequests){
+					if (!err && friendRequests){
+						result["friendRequests"] = friendRequests;
+						res.status(200).json(result);
+					}
+					else{
+						res.status(500).json({reasonMessage: err});
+					}
+				});
 			}
 			else{
 				res.status(500).json({reasonMessage: err});
