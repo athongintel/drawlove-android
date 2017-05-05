@@ -67,7 +67,7 @@ var UserServices = {
 		}
 	},
 
-	answerRequest(currentUser, requestID, status, cb){
+	answerRequest: function(currentUser, requestID, status, cb){
 		//-- check if currentUser is request's receiver
 		Request.findById(requestID, function(err, request){
 			if (!err && request){
