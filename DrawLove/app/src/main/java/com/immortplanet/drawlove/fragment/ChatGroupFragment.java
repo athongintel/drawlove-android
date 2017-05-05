@@ -2,24 +2,20 @@ package com.immortplanet.drawlove.fragment;
 
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.immortplanet.drawlove.ChatGroupActivity;
 import com.immortplanet.drawlove.model.Group;
 import com.immortplanet.drawlove.util.CallbackWithData;
 import com.immortplanet.drawlove.util.HttpCallback;
@@ -124,7 +120,7 @@ public class ChatGroupFragment extends Fragment {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             View groupView = null;
             View.OnClickListener onClickListener = null;
             if (position < arrayList.size()){
@@ -139,6 +135,11 @@ public class ChatGroupFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         //-- load ChatGroupActivity with this group
+                        Bundle bundle = new Bundle();
+                        bundle.putString("groupID", arrayList.get(position)._id);
+                        Intent iChatGroup = new Intent(getActivity(), ChatGroupActivity.class);
+                        iChatGroup.putExtras(bundle);
+                        startActivity(iChatGroup);
                     }
                 };
             }

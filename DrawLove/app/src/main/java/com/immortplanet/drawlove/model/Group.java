@@ -4,6 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 /**
  * Created by tom on 5/3/17.
  */
@@ -13,6 +15,7 @@ public class Group extends DataModel {
     public String _id;
     public String name;
     public String[] members;
+    public ArrayList<Message> messages;
 
     public Group(JSONObject jsonObject){
         try {
@@ -23,6 +26,7 @@ public class Group extends DataModel {
             for (int j=0; j<members.length(); j++){
                 this.members[j] = members.getString(j);
             }
+            messages = new ArrayList<>();
         } catch (JSONException e) {
             e.printStackTrace();
         }

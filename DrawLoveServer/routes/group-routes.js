@@ -35,4 +35,41 @@ router.route('/')
 		}
 	});
 
+router.route('/chat')
+	.post(function(req, res){
+		var groupID = req.body["groupID"];
+		var messageCount = req.body["messageCount"];
+		if (groupID){
+			//-- check if group exits and the user belong to the group
+			GroupServices.getGroupById(groupID, function(err, group){
+				if (!err && group){
+					console.log(group);
+					if (group.members.indexOf(req.session["currentUser"]._id) >= 0){
+						//-- get latest count message then return
+						var result = {};
+						result["group"] = group;
+						GroupServices.getLatestMessages(groupID, messageCount, function(err, messages){
+							if (!err && messages){
+								result["messages"] = messages;
+								res.status(200).json(result);
+							}
+							else{
+								res.status(500).json({"reasonMessage": "Cannot load group messages"});
+							}
+						});
+					}
+					else{
+						res.status(500).json({"reasonMessage" : "User not belong to the group"});
+					}
+				}
+				else{
+					res.status(500).json({"reasonMessage" : "Group not found."});
+				}
+			});
+		}
+		else{
+			res.status(400).json({});
+		}
+	});
+
 module.exports = router;

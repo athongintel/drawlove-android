@@ -9,6 +9,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 /**
  * Created by tom on 5/2/17.
@@ -22,6 +23,7 @@ public class User extends DataModel {
     public ArrayList<User> friends;
     public ArrayList<Request> sentRequests;
     public ArrayList<Request> receivedRequests;
+    public HashMap<String, Group> groups;
 
     public User(JSONObject jsonObject){
         try{
@@ -29,6 +31,7 @@ public class User extends DataModel {
             chatID = jsonObject.getString("chatID");
             email = jsonObject.getString("email");
             joinedDate = NodeDateTime.getDateFromID(_id);
+            groups = new HashMap<>();
         }
         catch(JSONException e){
             e.printStackTrace();

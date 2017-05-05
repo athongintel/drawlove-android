@@ -14,7 +14,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="35dp"
-        android:text='"A picture is worth thousands words"'
+        android:text='"A picture is worth a thousand words"'
         android:textAlignment="center"
         android:textColor="@android:color/white"
         android:textSize="18sp"

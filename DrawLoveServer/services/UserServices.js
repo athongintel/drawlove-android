@@ -142,11 +142,11 @@ var UserServices = {
 
 	requestAddUserToGroup: function(currentUser, receiverID, groupID, cb){
 		//-- check if receiverID is currentUser's friend
-		if (currentUser.friends.contains(receiverID)){
+		if (currentUser.friends.indexOf(receiverID) >= 0){
 			//-- check if user is in this group
 			GroupServices.getGroupById(groupID, function(err, group){
 				if (!err && group){
-					if (group.members.contains(currentUser._id)){
+					if (group.members.indexOf(currentUser._id) >= 0){
 						User.findById(receiverID, function(err, user){
 							if (!err && user){
 								Request = new Request({"sender": currentUser._id, "receiver": user._id, "type": "group", "requestData": [groupID, group.name, currentUser.chatID, user.chatID]});

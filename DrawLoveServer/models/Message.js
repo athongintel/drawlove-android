@@ -8,7 +8,8 @@ var MessageSchema = Schema(
         contentMetaData: {type: String},
         content: {type: String, required: true},
         sender: {type: Schema.ObjectId, ref: 'User', required: true},
-        group: {type: Schema.ObjectId, ref: 'Group', required: true}
+        group: {type: Schema.ObjectId, ref: 'Group', required: true},
+        sentDate: {type: Date, default: Date.now},
     },
     {
         collection: "tbMessage"

@@ -61,6 +61,12 @@ public class NavigationDrawerFragment extends Fragment {
     private String[] menu;
 
     public NavigationDrawerFragment() {
+        menu = new String[]{
+                "Groups",
+                "Friends",
+                "Settings",
+                "About"
+        };
     }
 
     @Override
@@ -104,13 +110,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListView.setAdapter(new ArrayAdapter<String>(
                 getActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                new String[]{
-                        "Groups",
-                        "Friends",
-                        "Settings",
-                        "About"
-                }));
+                android.R.id.text1, menu));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
@@ -195,6 +195,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     private void selectItem(int position) {
         mCurrentSelectedPosition = position;
+        getActivity().setTitle(menu[position]);
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
         }
