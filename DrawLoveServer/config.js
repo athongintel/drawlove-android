@@ -1,5 +1,5 @@
 var config = {
-	host: "http://localhost",
+	host: "http://drawlove.immortplanet.com",
 	port: 8083
 }
 

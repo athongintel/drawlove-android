@@ -29,9 +29,9 @@ public class HttpRequest extends AsyncTask{
         }
     }
 
-//    public static String DOMAIN = "http://drawlove.immortplanet.com/";
+    public static String DOMAIN = "http://drawlove.immortplanet.com";
 
-    public static String DOMAIN = "http://10.0.2.2:8001";
+//    public static String DOMAIN = "http://149.56.142.13:8083";
 
     String method;
     String route;
