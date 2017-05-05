@@ -2,10 +2,20 @@ var User = require('../models/User.js');
 var Request = require('../models/Request.js');
 var randomstring = require('randomstring');
 var crypto = require('crypto');
+var MailServices = require('./MailServices.js');
+var GroupServices = require('./GroupServices.js');
 
 var UserServices = {
 
 	activeUsers : {},
+
+	findUserById: function(userID, cb){
+		User.findById(userID, cb);
+	},
+
+	findUsersByIds: function(userIDs, cb){
+		User.find({"_id" : {$in : userIDs}}, cb);
+	},
 
 	createNewUser : function(chatID, password, email, cb){
 		//-- random salt
@@ -14,25 +24,40 @@ var UserServices = {
 		var hash = crypto.createHash('sha256'); 
 		hash.update(password);
 		hash.update(salt);
-		var passwordHash = String(hash.digest('base64'));
+		var passwordHash = hash.digest('base64');
 		
 		//-- create user
-		var user = new User({chatID : chatID, passwordHash: passwordHash, salt: salt, email: email});
+		var user = new User({"chatID" : chatID, "passwordHash": passwordHash, "salt": salt, "email": email});
 		user.save(function(err, doc){
-			console.log("error: ", err);
-			cb(err, doc);
+			if (!err && doc){
+				//-- send email verification
+				MailServices.sendVerificationEmail(doc, function(err, random){
+					//-- if email cannot be sent then auto-active user account
+					if (err){
+						user.isActivated = true;
+						user.save(cb);
+					}
+					else{
+						user.emailToken = random;
+						user.save(cb);
+					}
+				});
+			}
+			else{
+				cb(err);
+			}
 		});
 	},
 
-	requestFriend: function(senderID, receiverID, cb){
-		if (senderID == receiverID){
+	requestFriend: function(currentUser, receiverID, cb){
+		if (currentUser._id == receiverID){
 			cb("Cannot make friend to yourself");
 		}
 		else{
 			User.findById(receiverID, function(err, doc){
 				if (!err && doc){
 					//-- TODO : check states
-					var request = new Request({sender: senderID, receiver: doc._id, type: "friend", status: "pending"});
+					var request = new Request({"sender": currentUser._id, "receiver": doc._id, "type": "friend", "status": "pending", "requestData" : [currentUser.chatID, doc["chatID"]]});
 					request.save(cb);
 				}
 				else{
@@ -42,16 +67,120 @@ var UserServices = {
 		}
 	},
 
-	getRequestFriend: function(userID, cb){
-		Request.find({sender: userID}).exec(cb);
+	answerRequest(currentUser, requestID, status, cb){
+		//-- check if currentUser is request's receiver
+		Request.findById(requestID, function(err, request){
+			if (!err && request){
+				if (currentUser._id == request.receiver){
+					if (request.status == "pending"){
+						request.status = status;
+						request.save(function(err, doc){
+							if (!err && doc){
+								if (request.status == "accepted"){
+									if (request.type == "friend"){
+										//-- add friend
+										User.findById(request.sender, function(err, sender){
+											if (!err && sender){
+												sender.friends.push(currentUser._id);
+												sender.save(function(err, doc){
+													if (!err && doc){
+														User.findById(currentUser._id, function(err, d){
+															if (!err && d){
+																d.friends.push(request.sender);
+																d.save(cb);
+															}
+															else{
+																cb(err || "Cannot add friend right now.", null);
+															}
+														});
+													}
+													else{
+														cb(err || "Cannot add friend right now.", null);
+													}
+												});
+											}
+											else{
+												cb(err || "User not found", null);
+											}
+										});
+									}
+									else if (request.type == "group"){
+										var groupID = request.requestData[0];
+										Group.findById(groupID, function(err, doc){
+											if (!err && doc){
+												doc.members.push(request.receiver);
+												doc.save(cb);
+											}
+											else{
+												cb(err || "Group not found.", null);
+											}
+										});
+									}
+								}
+								else{
+									cb(null, doc);
+								}
+							}
+							else{
+								cb(err, null);
+							}
+						});
+					}
+					else{
+						cb("Request had been processed before.");
+					}
+				}
+				else{
+					cb("User not own the request.");
+				}
+			}
+			else{
+				cb("Request not found.");
+			}
+		});
 	},
 
-	getFriendRequest: function(userID, cb){
-		Request.find({receiver: userID}).exec(cb);
+	requestAddUserToGroup: function(currentUser, receiverID, groupID, cb){
+		//-- check if receiverID is currentUser's friend
+		if (currentUser.friends.contains(receiverID)){
+			//-- check if user is in this group
+			GroupServices.getGroupById(groupID, function(err, group){
+				if (!err && group){
+					if (group.members.contains(currentUser._id)){
+						User.findById(receiverID, function(err, user){
+							if (!err && user){
+								Request = new Request({"sender": currentUser._id, "receiver": user._id, "type": "group", "requestData": [groupID, group.name, currentUser.chatID, user.chatID]});
+								request.save(cb);
+							}
+							else{
+								cb("User not found.");
+							}
+						});
+					}
+					else{
+						cb("You do not have right to access this group.");
+					}
+				}
+				else{
+					cb("Group not found.");
+				}
+			});
+		}
+		else{
+			cb("Can only add a friend to a group.");
+		}
+	},
+
+	getRequestSent: function(userID, cb){
+		Request.find({"sender": userID}).exec(cb);
+	},
+
+	getRequestReceived: function(userID, cb){
+		Request.find({"receiver": userID}).exec(cb);
 	},
 
 	checkChatID : function(chatID, cb){
-		User.findOne({chatID: chatID}, function(err, user){
+		User.findOne({"chatID": chatID}, function(err, user){
 			if (user){
 				cb("ChatID had been taken");
 			}
@@ -62,7 +191,7 @@ var UserServices = {
 	},
 
 	authenticateUser: function(chatID, password, cb){
-		User.findOne({chatID: chatID}, function(err, user){
+		User.findOne({"chatID": chatID}, function(err, user){
 			if (!err && user){
 				if (user.isActivated){
 					var hash = crypto.createHash('sha256');

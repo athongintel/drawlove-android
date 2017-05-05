@@ -12,13 +12,17 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.immortplanet.drawlove.model.DataSingleton;
+import com.immortplanet.drawlove.model.Request;
 import com.immortplanet.drawlove.model.User;
 import com.immortplanet.drawlove.util.HttpCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
 import com.immortplanet.drawlove.util.SimpleDialog;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class LoginActivity extends Activity {
 
@@ -71,11 +75,53 @@ public class LoginActivity extends Activity {
                     public void finished(JSONObject jsonObject) {
                         //-- authenticated
                         prLogin.setVisibility(View.GONE);
-                        User currentUser = new User(jsonObject);
-                        DataSingleton.getDataSingleton().data.put("currentUser", currentUser);
-                        Intent iChat = new Intent(getApplicationContext(), ChatActivity.class);
-                        startActivity(iChat);
-                        finish();
+                        final User currentUser = new User(jsonObject);
+                        HttpRequest allRequest = new HttpRequest("GET", "/user/request/all", null, new HttpCallback() {
+                            @Override
+                            public void finished(JSONObject jsonObject) {
+                                try {
+                                    currentUser.friends = new ArrayList<>();
+                                    JSONArray arFriends = (JSONArray)jsonObject.getJSONArray("friends");
+                                    for (int i=0; i< arFriends.length(); i++){
+                                        User user = new User((JSONObject)arFriends.get(i));
+                                        currentUser.friends.add(user);
+                                    }
+
+                                    currentUser.sentRequests = new ArrayList<>();
+                                    JSONArray arRequest = (JSONArray)jsonObject.getJSONArray("sentRequests");
+                                    for (int i=0; i< arRequest.length(); i++){
+                                        Request request = new Request((JSONObject)arRequest.get(i));
+                                        currentUser.sentRequests.add(request);
+                                    }
+
+                                    currentUser.receivedRequests = new ArrayList<>();
+                                    JSONArray arReceivedRequests = (JSONArray)jsonObject.getJSONArray("receivedRequests");
+                                    for (int i=0; i< arReceivedRequests.length(); i++){
+                                        Request request = new Request((JSONObject)arReceivedRequests.get(i));
+                                        currentUser.receivedRequests.add(request);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                DataSingleton.getDataSingleton().put("currentUser", currentUser);
+                                Intent iChat = new Intent(getApplicationContext(), ChatActivity.class);
+                                startActivity(iChat);
+                                finish();
+                            }
+                        }, new HttpCallback() {
+                            @Override
+                            public void finished(JSONObject jsonObject) {
+                                SimpleDialog dialog = new SimpleDialog(LoginActivity.this, "Error", "Cannot load user info. Retry later.", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                dialog.show();
+                            }
+                        });
+                        allRequest.execute();
+
                     }
                 }, new HttpCallback() {
                     @Override

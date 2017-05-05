@@ -21,4 +21,7 @@ public class SimpleDialog {
     public void show(){
         alertDialog.show();
     }
+    public void dismiss(){
+        alertDialog.dismiss();
+    }
 }

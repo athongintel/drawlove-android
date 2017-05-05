@@ -83,7 +83,7 @@ public class SettingFragment extends Fragment {
             }
         });
 
-        User user = (User) DataSingleton.getDataSingleton().data.get("currentUser");
+        User user = (User) DataSingleton.getDataSingleton().get("currentUser");
         if (user == null){
             SimpleDialog dialog = new SimpleDialog(getActivity(), "Error", "Session expired. Please login again.", new DialogInterface.OnClickListener() {
                 @Override

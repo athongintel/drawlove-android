@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class DataSingleton {
 
-    public HashMap<String, DataModel> data;
+    private HashMap<String, Object> data;
 
     private static DataSingleton dataSingleton;
 
@@ -17,6 +17,14 @@ public class DataSingleton {
             dataSingleton = new DataSingleton();
         }
         return dataSingleton;
+    }
+
+    public Object get(String key){
+        return data.get(key);
+    }
+
+    public void put(String key, Object obj){
+        data.put(key, obj);
     }
 
 

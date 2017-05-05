@@ -1,5 +1,6 @@
 var express = require('express');
 var UserServices = require('../services/UserServices.js');
+var MailServices = require('../services/MailServices.js');
 
 var router = express.Router();
 
@@ -25,6 +26,41 @@ router.route('/login')
 			}
 		});
 	});
+
+router.route('/email_verification')
+	.get(function(req, res){
+		var token = req.query["token"];
+		var userID = req.query["userID"];
+		if (token && userID){
+			//-- find user
+			token = decodeURIComponent(token);
+			UserServices.findUserById(userID, function(err, user){
+				if (!err && user){
+					if (MailServices.verifyEmail(user, token)){
+						//-- success, update is activated
+						user.isActivated = true;
+						user.save(function(err, doc){
+							if (!err && doc){
+								res.status(200).json({status: "success"});
+							}
+							else{
+								res.status(500).json({reasonMessage: err});
+							}
+						});
+					}
+					else{
+						res.status(500).json({reasonMessage: "Cannot verify user. Invalid token."});
+					}
+				}
+				else{
+					res.status(500).json({reasonMessage: "Cannot find user."});
+				}
+			});
+		}
+		else{
+			res.status(400).json({});
+		}
+	})
 
 router.route('/logout')
 	.get(function(req, res){

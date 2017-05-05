@@ -1,6 +1,7 @@
 package com.immortplanet.drawlove.model;
 
-import org.json.JSONArray;
+import com.immortplanet.drawlove.util.NodeDateTime;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -8,7 +9,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by tom on 5/2/17.
@@ -19,25 +19,16 @@ public class User extends DataModel {
     public String chatID;
     public String joinedDate;
     public String email;
-    public ArrayList<String> friends;
-    public ArrayList<Request> requests;
-    public ArrayList<Request> friendRequests;
+    public ArrayList<User> friends;
+    public ArrayList<Request> sentRequests;
+    public ArrayList<Request> receivedRequests;
 
     public User(JSONObject jsonObject){
         try{
             _id = jsonObject.getString("_id");
             chatID = jsonObject.getString("chatID");
             email = jsonObject.getString("email");
-            Calendar calendar = Calendar.getInstance();
-            long milliSeconds = Long.parseLong(jsonObject.getString("_id").substring(0, 8), 16)*1000;
-            calendar.setTimeInMillis(milliSeconds);
-            DateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
-            joinedDate = dateFormatter.format(calendar.getTime());
-            friends = new ArrayList<>();
-            JSONArray arFriends = (JSONArray)jsonObject.getJSONArray("friends");
-            for (int i=0; i<arFriends.length(); i++){
-                friends.add(arFriends.getString(i));
-            }
+            joinedDate = NodeDateTime.getDateFromID(_id);
         }
         catch(JSONException e){
             e.printStackTrace();
@@ -45,54 +36,51 @@ public class User extends DataModel {
     }
 
     public boolean isFriend(String userID){
-        return friends.contains(userID);
+        for (int i=0; i<friends.size();i++){
+            if (friends.get(i)._id.equals(userID)){
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isBlocked(String userID, String type){
-        boolean isBlocked = false;
-        for (int i=0; i<requests.size(); i++){
-            Request request = requests.get(i);
+        for (int i=0; i<sentRequests.size(); i++){
+            Request request = sentRequests.get(i);
             if (request.receiver.equals(userID) && request.type.equals(type) && request.status.equals("blocked")){
-                isBlocked = true;
-                break;
+                return true;
             }
         }
-        return isBlocked;
+        return false;
     }
 
     public boolean isBlocking(String userID, String type){
-        boolean isBlocking = false;
-        for (int i=0; i<friendRequests.size(); i++){
-            Request request = friendRequests.get(i);
+        for (int i = 0; i< receivedRequests.size(); i++){
+            Request request = receivedRequests.get(i);
             if (request.sender.equals(userID) && request.type.equals(type) && request.status.equals("blocked")){
-                isBlocking = true;
-                break;
+                return true;
             }
         }
-        return isBlocking;
+        return false;
     }
 
     public boolean isPending(String userID, String type){
-        boolean isPending = false;
-        for (int i=0; i<requests.size(); i++){
-            Request request = requests.get(i);
+        for (int i=0; i<sentRequests.size(); i++){
+            Request request = sentRequests.get(i);
             if (request.receiver.equals(userID) && request.type.equals(type) && request.status.equals("pending")){
-                isPending = true;
-                break;
+                return true;
             }
         }
-        return isPending;
+        return false;
     }
 
     public boolean isReceiving(String userID, String type){
-        boolean isReceiving = false;
-        for (int i=0; i<friendRequests.size(); i++){
-            Request request = friendRequests.get(i);
+        for (int i = 0; i< receivedRequests.size(); i++){
+            Request request = receivedRequests.get(i);
             if (request.sender.equals(userID) && request.type.equals(type) && request.status.equals("pending")){
-                isReceiving = true;
-                break;
+                return true;
             }
         }
-        return isReceiving;
+        return false;
     }
 }

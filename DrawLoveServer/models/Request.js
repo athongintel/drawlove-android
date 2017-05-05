@@ -7,9 +7,9 @@ var RequestSchema = Schema(
         sender : {type: Schema.ObjectId, ref: 'User', required: true},
         receiver: {type: Schema.ObjectId, ref: 'User', required: true},
         type: {type: String, required: true},
-        status: {type: String, required: true},
-        requestData_1: {type: String},
-        requestData_2: {type: String},
+        status: {type: String, default: "pending"},
+        requestDate: {type: Date, default: Date.now},
+        requestData: [{type: String}]
     },
     {
         collection: "Request"

@@ -5,6 +5,8 @@ var session = require('express-session');
 var bodyParser  = require('body-parser');
 var http = require('http');
 
+var config = require('./config.js');
+
 var app = express();
 
 //-- connect to database
@@ -33,4 +35,4 @@ app.use('/user', require('./routes/user-routes.js'));
 app.use('/group', require('./routes/group-routes.js'));
 
 var httpServer = http.createServer(app);
-httpServer.listen(8001);
+httpServer.listen(config.port);

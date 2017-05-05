@@ -12,6 +12,7 @@
     "body-parser": "^1.17.1",
     "express-session": "^1.15.2",
     "mongoose": "^4.9.6",
+    "nodemailer": "^4.0.1",
     "randomstring": "^1.1.5",
     "request": "^2.81.0"
   }

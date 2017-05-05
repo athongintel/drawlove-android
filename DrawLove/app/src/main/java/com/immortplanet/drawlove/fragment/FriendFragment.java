@@ -13,7 +13,7 @@ import android.widget.ProgressBar;
 
 import com.immortplanet.drawlove.R;
 import com.immortplanet.drawlove.fragment.friend.FriendFriendFragment;
-import com.immortplanet.drawlove.fragment.friend.FriendNotificationFragement;
+import com.immortplanet.drawlove.fragment.friend.FriendNotificationFragment;
 import com.immortplanet.drawlove.fragment.friend.FriendRequestFragment;
 import com.immortplanet.drawlove.fragment.friend.FriendSearchFragment;
 import com.immortplanet.drawlove.model.DataSingleton;
@@ -28,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -62,6 +63,8 @@ public class FriendFragment extends Fragment implements View.OnClickListener{
         // Inflate the layout for this fragment
         thisView = inflater.inflate(R.layout.fragment_friend, container, false);
 
+//        DataSingleton.getDataSingleton().put("users", new HashMap<String, User>());
+
         btSearch = (ImageButton)thisView.findViewById(R.id.btSearch);
         btFriend = (ImageButton)thisView.findViewById(R.id.btFriend);
         btRequest = (ImageButton)thisView.findViewById(R.id.btRequest);
@@ -75,50 +78,11 @@ public class FriendFragment extends Fragment implements View.OnClickListener{
         frgSearch = new FriendSearchFragment();
         frgFriend = new FriendFriendFragment();
         frgRequest = new FriendRequestFragment();
-        frgNotification = new FriendNotificationFragement();
+        frgNotification = new FriendNotificationFragment();
 
-        prLoading.setVisibility(View.VISIBLE);
+        prLoading.setVisibility(View.GONE);
 
-        final User currentUser = (User) DataSingleton.getDataSingleton().data.get("currentUser");
-        if (currentUser.requests == null || currentUser.friendRequests == null){
-            HttpRequest request = new HttpRequest("GET", "/user/request/all", null, new HttpCallback() {
-                @Override
-                public void finished(JSONObject jsonObject) {
-                    prLoading.setVisibility(View.GONE);
-                    try {
-                        currentUser.requests = new ArrayList<>();
-                        JSONArray arRequest = (JSONArray)jsonObject.getJSONArray("requests");
-                        for (int i=0; i< arRequest.length(); i++){
-                            Request request = new Request((JSONObject)arRequest.get(i));
-                            currentUser.requests.add(request);
-                        }
-
-                        currentUser.friendRequests = new ArrayList<>();
-                        JSONArray arFriendRequests = (JSONArray)jsonObject.getJSONArray("friendRequests");
-                        for (int i=0; i< arFriendRequests.length(); i++){
-                            Request request = new Request((JSONObject)arFriendRequests.get(i));
-                            currentUser.friendRequests.add(request);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }, new HttpCallback() {
-                @Override
-                public void finished(JSONObject jsonObject) {
-                    prLoading.setVisibility(View.GONE);
-                    SimpleDialog dialog = new SimpleDialog(getActivity(), "Error", "Cannot load user info. Retry later.", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    dialog.show();
-                }
-            });
-            request.execute();
-        }
-
+        final User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
         selectFragment(R.id.btSearch);
         return thisView;
     }

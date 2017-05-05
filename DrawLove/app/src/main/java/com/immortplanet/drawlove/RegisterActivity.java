@@ -84,6 +84,7 @@ public class RegisterActivity extends Activity {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                     startActivity(iLogin, bundle);
+                                    RegisterActivity.this.finish();
                                 }
                             });
                             dialog.show();

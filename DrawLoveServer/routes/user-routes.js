@@ -26,11 +26,10 @@ router.route('/search')
 
 router.route('/request/friend')
 	.post(function(req, res){
-		//-- TODO: add new friend request
+		//-- add new friend request
 		var userID = req.body['userID'];
-		var requestType = "friend";
 		if (userID){
-			UserServices.requestFriend(req.session['currentUser']._id, userID, function(err, request){
+			UserServices.requestFriend(req.session['currentUser'], userID, function(err, request){
 				if (!err){
 					res.status(200).json(request);
 				}
@@ -44,17 +43,84 @@ router.route('/request/friend')
 		}
 	});
 
+router.route('/request/add_to_group')
+	.post(function(req, res){
+		//-- add a user to a group
+		var userID = req.body['userID'];
+		var groupID = req.body['groupID'];
+		if (userID){
+			UserServices.requestAddUserToGroup(req.session['currentUser'], userID, groupID, function(err, request){
+				if (!err){
+					res.status(200).json(request);
+				}
+				else{
+					res.status(500).json({reasonMessage: err});
+				}
+			});
+		}
+		else{
+			res.status(400).json({});
+		}
+	});
+
+router.route('/request/action')
+	.post(function(req, res){
+		var requestID = req.body["requestID"];
+		var status = req.body["status"];
+		if (requestID && status){
+			UserServices.answerRequest(req.session["currentUser"], requestID, status, function(err, request){
+				if (!err && request){
+					res.status(200).json({});
+				}
+				else{
+					res.status(500).json({reasonMessage: err});
+				}
+			});
+		}
+		else{
+			res.status(400).json({});
+		}
+	});
+
 router.route('/request/all')
 	.get(function(req, res){
-		//-- get all friend requests received
-		var result  = {};
-		UserServices.getRequestFriend(req.session['currentUser']._id, function(err, requests){
-			if (!err && requests){
-				result["requests"] = requests;
-				UserServices.getFriendRequest(req.session['currentUser']._id, function(err, friendRequests){
-					if (!err && friendRequests){
-						result["friendRequests"] = friendRequests;
-						res.status(200).json(result);
+		//-- get all friends and requests received
+		// var userIDs = [];
+		var result  = {
+			// "users": {}
+		};
+		UserServices.getRequestSent(req.session['currentUser']._id, function(err, sentRequests){
+			if (!err && sentRequests){
+				result["sentRequests"] = sentRequests;
+				UserServices.getRequestReceived(req.session['currentUser']._id, function(err, receivedRequests){
+					if (!err && receivedRequests){
+						result["receivedRequests"] = receivedRequests;
+						UserServices.findUsersByIds(req.session['currentUser'].friends, function(err, friends){
+							if (!err && friends){
+								result["friends"] = friends;
+								//-- get userIDS
+								// for (var i=0; i<sentRequests.length; i++){
+								// 	userIDs.push(sentRequests[i].receiver._id);
+								// }
+								// for (var i=0; i<receivedRequests.length; i++){
+								// 	userIDs.push(receivedRequests[i].sender._id);
+								// }
+								// UserServices.getUsersByIds(userIDs, function(err, docs){
+								// 	if (!err && docs){
+								// 		for (var i=0; i<docs.length; i++){
+								// 			result.users[docs[i]._id] = docs[i];
+								// 		}
+										res.status(200).json(result);
+								// 	}
+								// 	else{
+								// 		res.status(500).json({reasonMessage: err});
+								// 	}
+								// });
+							}
+							else{
+								res.status(500).json({reasonMessage: err});
+							}
+						});
 					}
 					else{
 						res.status(500).json({reasonMessage: err});

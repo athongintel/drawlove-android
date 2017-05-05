@@ -41,21 +41,14 @@ public class FriendSearchFragment extends Fragment {
     ListView liUser;
     EditText txtSearch;
 
-    static User currentUser = (User) DataSingleton.getDataSingleton().data.get("currentUser");
-
     public FriendSearchFragment(){
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         thisView = inflater.inflate(R.layout.friend_search_fragment, null);
         btSearch = (Button)thisView.findViewById(R.id.btSearch);
-        liUser = (ListView)thisView.findViewById(R.id.liUser);
+        liUser = (ListView)thisView.findViewById(R.id.listView);
         txtSearch = (EditText)thisView.findViewById(R.id.txtSearch);
         btSearch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,6 +142,7 @@ public class FriendSearchFragment extends Fragment {
             final TextView txtStatus = (TextView)userView.findViewById(R.id.txtStatus);
             final ImageButton btAction = (ImageButton)userView.findViewById((R.id.btAction));
             btAction.setVisibility(View.GONE);
+            final User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
             if (currentUser._id.equals(u._id)){
                 txtStatus.setText("Just you :)");
             }
@@ -187,7 +181,7 @@ public class FriendSearchFragment extends Fragment {
                                 txtStatus.setText("Pending");
                                 btAction.setVisibility(View.GONE);
                                 Request request = new Request(jsonObject);
-                                currentUser.requests.add(request);
+                                currentUser.sentRequests.add(request);
                             }
                         }, new HttpCallback() {
                             @Override
