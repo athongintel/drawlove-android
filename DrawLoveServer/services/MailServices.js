@@ -17,7 +17,7 @@ var mailOptions = {
 };
 
 var MailServices = {
-	sendVerificationEmail(user, cb){
+	sendVerificationEmail: function(user, cb){
 		var random = randomstring.generate(16);
 		var hash = crypto.createHash('sha256');
 		hash.update(random);
@@ -32,7 +32,7 @@ var MailServices = {
 		});
 	},
 
-	verifyEmail(user, uToken){
+	verifyEmail: function(user, uToken){
 		var hash = crypto.createHash('sha256');
 		hash.update(user.emailToken);
 		hash.update(String(user._id));
