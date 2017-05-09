@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.immortplanet.drawlove.R;
@@ -40,6 +41,8 @@ public class FriendSearchFragment extends Fragment {
     Button btSearch;
     ListView liUser;
     EditText txtSearch;
+    ProgressBar prLoading;
+    TextView txtInfo;
 
     public FriendSearchFragment(){
     }
@@ -50,9 +53,17 @@ public class FriendSearchFragment extends Fragment {
         btSearch = (Button)thisView.findViewById(R.id.btSearch);
         liUser = (ListView)thisView.findViewById(R.id.listView);
         txtSearch = (EditText)thisView.findViewById(R.id.txtSearch);
+        prLoading = (ProgressBar)thisView.findViewById(R.id.prLoading);
+        txtInfo = (TextView)thisView.findViewById(R.id.txtInfo);
+        prLoading.setVisibility(View.GONE);
+        txtInfo.setVisibility(View.GONE);
+
         btSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                prLoading.setVisibility(View.VISIBLE);
+                txtInfo.setVisibility(View.GONE);
+
                 JSONObject jsonObject = new JSONObject();
                 try {
                     jsonObject.put("search", txtSearch.getText().toString());
@@ -62,8 +73,13 @@ public class FriendSearchFragment extends Fragment {
                 HttpRequest request = new HttpRequest("POST", "/user/search", jsonObject, new HttpCallback() {
                     @Override
                     public void finished(JSONObject jsonObject) {
+                        prLoading.setVisibility(View.GONE);
                         try {
                             JSONArray arUsers = (JSONArray)(jsonObject.getJSONArray("users"));
+                            if (arUsers.length()==0){
+                                txtInfo.setText("No result found");
+                                txtInfo.setVisibility(View.VISIBLE);
+                            }
                             ArrayList<User> arList = new ArrayList<User>();
                             for (int i=0; i<arUsers.length(); i++){
                                 User u = new User((JSONObject)arUsers.get(i));
@@ -84,20 +100,9 @@ public class FriendSearchFragment extends Fragment {
                 }, new HttpCallback() {
                     @Override
                     public void finished(JSONObject jsonObject) {
-                        String message = "Unknown";
-                        try{
-                            message = jsonObject.getString("reasonMessage");
-                        }
-                        catch(JSONException e) {
-                            e.printStackTrace();
-                        }
-                        SimpleDialog dialog = new SimpleDialog(getActivity(), "Error", message, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                        dialog.show();
+                        prLoading.setVisibility(View.GONE);
+                        txtInfo.setText("Some errors occurred. Please retry later.");
+                        txtInfo.setVisibility(View.VISIBLE);
                     }
                 });
                 request.execute();

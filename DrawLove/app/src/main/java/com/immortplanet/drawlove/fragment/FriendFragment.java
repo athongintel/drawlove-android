@@ -5,12 +5,17 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import com.immortplanet.drawlove.LoginActivity;
 import com.immortplanet.drawlove.R;
 import com.immortplanet.drawlove.fragment.friend.FriendFriendFragment;
 import com.immortplanet.drawlove.fragment.friend.FriendNotificationFragment;
@@ -47,6 +52,10 @@ public class FriendFragment extends Fragment implements View.OnClickListener{
     ImageButton btNotification;
     ProgressBar prLoading;
 
+    LinearLayout layoutInfo;
+    TextView txtInfo;
+    Button btRetry;
+
     Fragment frgSearch;
     Fragment frgFriend;
     Fragment frgRequest;
@@ -63,13 +72,17 @@ public class FriendFragment extends Fragment implements View.OnClickListener{
         // Inflate the layout for this fragment
         thisView = inflater.inflate(R.layout.fragment_friend, container, false);
 
-//        DataSingleton.getDataSingleton().put("users", new HashMap<String, User>());
-
         btSearch = (ImageButton)thisView.findViewById(R.id.btSearch);
         btFriend = (ImageButton)thisView.findViewById(R.id.btFriend);
         btRequest = (ImageButton)thisView.findViewById(R.id.btRequest);
         btNotification = (ImageButton)thisView.findViewById(R.id.btNotification);
+
         prLoading = (ProgressBar)thisView.findViewById(R.id.prLoading);
+
+        layoutInfo = (LinearLayout)thisView.findViewById(R.id.layoutInfo);
+        txtInfo = (TextView)thisView.findViewById(R.id.txtInfo);
+        btRetry = (Button)thisView.findViewById(R.id.btRetry);
+
         btSearch.setOnClickListener(this);
         btFriend.setOnClickListener(this);
         btRequest.setOnClickListener(this);
@@ -80,11 +93,73 @@ public class FriendFragment extends Fragment implements View.OnClickListener{
         frgRequest = new FriendRequestFragment();
         frgNotification = new FriendNotificationFragment();
 
-        prLoading.setVisibility(View.GONE);
+
+        btRetry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reloadData();
+            }
+        });
+
+        reloadData();
+        return thisView;
+    }
+
+    private void reloadData(){
+        prLoading.setVisibility(View.VISIBLE);
+        btSearch.setEnabled(false);
+        btFriend.setEnabled(false);
+        btRequest.setEnabled(false);
+        btNotification.setEnabled(false);
+        layoutInfo.setVisibility(View.GONE);
 
         final User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
-        selectFragment(R.id.btSearch);
-        return thisView;
+        HttpRequest allRequest = new HttpRequest("GET", "/user/request/all", null, new HttpCallback() {
+            @Override
+            public void finished(JSONObject jsonObject) {
+                prLoading.setVisibility(View.GONE);
+                try {
+                    currentUser.friends = new ArrayList<>();
+                    JSONArray arFriends = (JSONArray)jsonObject.getJSONArray("friends");
+                    for (int i=0; i< arFriends.length(); i++){
+                        User user = new User((JSONObject)arFriends.get(i));
+                        currentUser.friends.add(user);
+                    }
+
+                    currentUser.sentRequests = new ArrayList<>();
+                    JSONArray arRequest = (JSONArray)jsonObject.getJSONArray("sentRequests");
+                    for (int i=0; i< arRequest.length(); i++){
+                        Request request = new Request((JSONObject)arRequest.get(i));
+                        currentUser.sentRequests.add(request);
+                    }
+
+                    currentUser.receivedRequests = new ArrayList<>();
+                    JSONArray arReceivedRequests = (JSONArray)jsonObject.getJSONArray("receivedRequests");
+                    for (int i=0; i< arReceivedRequests.length(); i++){
+                        Request request = new Request((JSONObject)arReceivedRequests.get(i));
+                        currentUser.receivedRequests.add(request);
+                    }
+
+                    btSearch.setEnabled(true);
+                    btFriend.setEnabled(true);
+                    btRequest.setEnabled(true);
+                    btNotification.setEnabled(true);
+
+                    selectFragment(R.id.btSearch);
+
+                } catch (JSONException e) {
+                    layoutInfo.setVisibility(View.VISIBLE);
+                    e.printStackTrace();
+                }
+            }
+        }, new HttpCallback() {
+            @Override
+            public void finished(JSONObject jsonObject) {
+                prLoading.setVisibility(View.GONE);
+                layoutInfo.setVisibility(View.VISIBLE);
+            }
+        });
+        allRequest.execute();
     }
 
     private void selectFragment(int id){

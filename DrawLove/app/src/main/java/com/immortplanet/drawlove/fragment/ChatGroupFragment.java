@@ -137,6 +137,7 @@ public class ChatGroupFragment extends Fragment {
                         //-- load ChatGroupActivity with this group
                         Bundle bundle = new Bundle();
                         bundle.putString("groupID", arrayList.get(position)._id);
+                        bundle.putString("groupName", arrayList.get(position).name);
                         Intent iChatGroup = new Intent(getActivity(), ChatGroupActivity.class);
                         iChatGroup.putExtras(bundle);
                         startActivity(iChatGroup);

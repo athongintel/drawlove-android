@@ -21,6 +21,7 @@ public class User extends DataModel {
     public String joinedDate;
     public String email;
     public ArrayList<User> friends;
+
     public ArrayList<Request> sentRequests;
     public ArrayList<Request> receivedRequests;
     public HashMap<String, Group> groups;
@@ -31,7 +32,6 @@ public class User extends DataModel {
             chatID = jsonObject.getString("chatID");
             email = jsonObject.getString("email");
             joinedDate = NodeDateTime.getDateFromID(_id);
-            groups = new HashMap<>();
         }
         catch(JSONException e){
             e.printStackTrace();

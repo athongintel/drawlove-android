@@ -39,6 +39,7 @@ import java.util.List;
 
 public class FriendNotificationFragment extends Fragment {
     View thisView;
+    TextView txtInfo;
 
     public FriendNotificationFragment(){
 
@@ -48,7 +49,13 @@ public class FriendNotificationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         thisView = inflater.inflate(R.layout.friend_list_view_fragment, null);
         ListView liRequest = (ListView)thisView.findViewById(R.id.liFriends);
+        txtInfo = (TextView)thisView.findViewById(R.id.txtInfo);
+        txtInfo.setVisibility(View.GONE);
         User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
+        if (currentUser.receivedRequests.isEmpty()){
+            txtInfo.setText("Nothing to show here.");
+            txtInfo.setVisibility(View.VISIBLE);
+        }
         liRequest.setAdapter(new FriendNotificationFragment.RequestAdapter(getActivity(), R.layout.notification_fragment, currentUser.receivedRequests));
         return thisView;
     }

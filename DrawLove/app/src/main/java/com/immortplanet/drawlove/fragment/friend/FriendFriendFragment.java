@@ -25,6 +25,7 @@ import java.util.ArrayList;
 public class FriendFriendFragment extends Fragment {
 
     View thisView;
+    TextView txtInfo;
 
     public FriendFriendFragment(){
 
@@ -33,8 +34,14 @@ public class FriendFriendFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         thisView = inflater.inflate(R.layout.friend_list_view_fragment, null);
+        txtInfo = (TextView)thisView.findViewById(R.id.txtInfo);
+        txtInfo.setVisibility(View.GONE);
         ListView liUser = (ListView)thisView.findViewById(R.id.liFriends);
         User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
+        if (currentUser.friends.isEmpty()){
+            txtInfo.setText("You don't have any friend for the moment. Send a request now!");
+            txtInfo.setVisibility(View.VISIBLE);
+        }
         liUser.setAdapter(new FriendFriendFragment.FriendAdapter(getActivity(), R.layout.friend_search_user, currentUser.friends));
         return thisView;
     }

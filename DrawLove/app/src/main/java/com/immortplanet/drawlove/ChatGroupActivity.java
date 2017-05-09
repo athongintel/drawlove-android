@@ -40,6 +40,7 @@ public class ChatGroupActivity extends Activity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     String groupID;
+    String groupName;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -57,6 +58,8 @@ public class ChatGroupActivity extends Activity {
         //-- set title, bundle is required to not be null
         Bundle bundle = getIntent().getExtras();
         groupID =  bundle.getString("groupID");
+        groupName = bundle.getString("groupName");
+        getActionBar().setTitle(groupName);
 
         //-- if this group is not loaded then load the info
         User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
@@ -75,7 +78,6 @@ public class ChatGroupActivity extends Activity {
                 public void finished(JSONObject jsonObject) {
                     try {
                         g[0] = new Group(jsonObject.getJSONObject("group"));
-                        getActionBar().setTitle(g[0].name);
                         JSONArray messages = jsonObject.getJSONArray("messages");
                         for (int i=0; i<messages.length(); i++) {
                             g[0].messages.add(new Message(messages.getJSONObject(i)));
