@@ -27,7 +27,6 @@ public class DataSingleton {
         data.put(key, obj);
     }
 
-
     public DataSingleton(){
         data = new HashMap<>();
     }

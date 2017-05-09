@@ -16,7 +16,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.immortplanet.drawlove.ChatGroupActivity;
+import com.immortplanet.drawlove.model.DataSingleton;
 import com.immortplanet.drawlove.model.Group;
+import com.immortplanet.drawlove.model.User;
 import com.immortplanet.drawlove.util.CallbackWithData;
 import com.immortplanet.drawlove.util.HttpCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
@@ -29,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -43,9 +46,7 @@ public class ChatGroupFragment extends Fragment {
     public ChatGroupFragment() {
         // Required empty public constructor
     }
-
-
-
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -57,6 +58,8 @@ public class ChatGroupFragment extends Fragment {
         prLoading.setVisibility(View.VISIBLE);
         txtLoadingInfo.setText("Loading groups...");
         arList = new ArrayList<>();
+        final User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
+        currentUser.groups = new HashMap<>();
 
         HttpRequest request = new HttpRequest("GET", "/group", null, new HttpCallback() {
             @Override
@@ -69,13 +72,12 @@ public class ChatGroupFragment extends Fragment {
                     groups = (JSONArray)(jsonObject.getJSONArray("groups"));
                     for (int i=0; i<groups.length(); i++){
                         Group g = new Group((JSONObject) groups.get(i));
-                        g.id = i;
                         arList.add(g);
+                        currentUser.groups.put(g._id, g);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
                 adapter = new GroupAdapter(getActivity(), 0, arList);
                 gvGroups.setAdapter(adapter);
             }
@@ -168,7 +170,6 @@ public class ChatGroupFragment extends Fragment {
                                         public void finished(JSONObject jsonObject) {
                                             //-- reload
                                             Group g = new Group(jsonObject);
-                                            g.id = adapter.getCount()-1;
                                             adapter.add(g);
                                         }
                                     }, new HttpCallback() {

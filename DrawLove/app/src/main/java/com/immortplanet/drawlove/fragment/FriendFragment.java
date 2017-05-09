@@ -118,12 +118,14 @@ public class FriendFragment extends Fragment implements View.OnClickListener{
             @Override
             public void finished(JSONObject jsonObject) {
                 prLoading.setVisibility(View.GONE);
+                HashMap<String, User> allUsers = (HashMap<String, User>) DataSingleton.getDataSingleton().get("allUsers");
                 try {
                     currentUser.friends = new ArrayList<>();
                     JSONArray arFriends = (JSONArray)jsonObject.getJSONArray("friends");
                     for (int i=0; i< arFriends.length(); i++){
                         User user = new User((JSONObject)arFriends.get(i));
                         currentUser.friends.add(user);
+                        allUsers.put(user._id, user);
                     }
 
                     currentUser.sentRequests = new ArrayList<>();

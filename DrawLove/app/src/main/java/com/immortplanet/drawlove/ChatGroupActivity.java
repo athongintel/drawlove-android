@@ -64,7 +64,7 @@ public class ChatGroupActivity extends Activity {
         //-- if this group is not loaded then load the info
         User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
         final Group[] g = {currentUser.groups.get(groupID)};
-        if (g[0] == null){
+        if (g[0] != null){
             //-- request the group and latest N message
             JSONObject jsonObject = new JSONObject();
             try {
@@ -77,7 +77,6 @@ public class ChatGroupActivity extends Activity {
                 @Override
                 public void finished(JSONObject jsonObject) {
                     try {
-                        g[0] = new Group(jsonObject.getJSONObject("group"));
                         JSONArray messages = jsonObject.getJSONArray("messages");
                         for (int i=0; i<messages.length(); i++) {
                             g[0].messages.add(new Message(messages.getJSONObject(i)));

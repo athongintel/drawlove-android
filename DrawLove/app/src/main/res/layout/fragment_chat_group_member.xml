@@ -7,5 +7,18 @@
         android:id="@+id/textView6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="[member list]" />
+        android:text="Already in this conversation" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+
+        <GridView
+            android:id="@+id/gvMembers"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:numColumns="5"
+            android:stretchMode="columnWidth"/>
+    </ScrollView>
+
 </LinearLayout>

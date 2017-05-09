@@ -60,5 +60,9 @@ public class InputDialog {
     public void show() {
         alertDialog.show();
     }
+    public void dismiss() {
+        txtInput.setText("");
+        alertDialog.dismiss();
+    }
 
 }

@@ -13,7 +13,11 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.immortplanet.drawlove.model.DataSingleton;
+import com.immortplanet.drawlove.model.User;
+
 import java.io.IOException;
+import java.util.HashMap;
 
 public class MainActivity extends Activity {
 
@@ -71,7 +75,8 @@ public class MainActivity extends Activity {
             }
         });
 
-
+        //-- DATA
+        DataSingleton.getDataSingleton().put("allUsers", new HashMap<String, User>());
 
     }
 

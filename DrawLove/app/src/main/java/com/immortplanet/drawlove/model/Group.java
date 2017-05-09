@@ -11,7 +11,6 @@ import java.util.ArrayList;
  */
 
 public class Group extends DataModel {
-    public long id;
     public String _id;
     public String name;
     public String[] members;

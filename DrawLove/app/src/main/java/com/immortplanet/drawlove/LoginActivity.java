@@ -52,6 +52,7 @@ public class LoginActivity extends Activity {
 
         String chatID="";
         String password="";
+        boolean remember = false;
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -60,12 +61,14 @@ public class LoginActivity extends Activity {
         }
         else{
             //-- try to get from preferences
-            chatID = DrawLovePreferences.getInstance(this).getString("USERNAME", "");
-            password = DrawLovePreferences.getInstance(this).getString("PASSWORD", "");
+            chatID = DrawLovePreferences.getInstance(LoginActivity.this).getString("USERNAME", "");
+            password = DrawLovePreferences.getInstance(LoginActivity.this).getString("PASSWORD", "");
+            remember = DrawLovePreferences.getInstance(LoginActivity.this).getBoolean("REMEMBER", false);
         }
 
         txtChatID.setText(chatID);
         txtPassword.setText(password);
+        chRemember.setChecked(remember);
         prLogin.setVisibility(View.GONE);
 
         btLogin.setOnClickListener(new View.OnClickListener() {
@@ -89,17 +92,19 @@ public class LoginActivity extends Activity {
                     @Override
                     public void finished(JSONObject jsonObject) {
                         //-- authenticated
-                        //-- save login and password if check is seleced
+                        //-- save login and password if check is selected
                         if (chRemember.isChecked()){
                             SharedPreferences.Editor editor = DrawLovePreferences.getInstance(getApplicationContext()).edit();
                             editor.putString("USERNAME", txtChatID.getText().toString());
                             editor.putString("PASSWORD", txtPassword.getText().toString());
+                            editor.putBoolean("REMEMBER", chRemember.isChecked());
                             editor.commit();
                         }
                         prLogin.setVisibility(View.GONE);
                         User currentUser = new User(jsonObject);
                         DataSingleton.getDataSingleton().put("currentUser", currentUser);
-                        DataSingleton.getDataSingleton().put("allUsers", new HashMap<String, User>());
+                        HashMap<String, User> allUsers = (HashMap<String, User>) DataSingleton.getDataSingleton().get("allUsers");
+                        allUsers.put(currentUser._id, currentUser);
 
                         Intent iChat = new Intent(getApplicationContext(), ChatActivity.class);
                         startActivity(iChat);

@@ -29,8 +29,7 @@ public class ChatActivity extends Activity
 
         setContentView(R.layout.activity_chat);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
 
         drawer = (DrawerLayout)findViewById(R.id.drawer_layout);
 
