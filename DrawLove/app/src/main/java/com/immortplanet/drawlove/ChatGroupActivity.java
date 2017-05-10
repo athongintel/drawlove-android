@@ -113,7 +113,6 @@ public class ChatGroupActivity extends Activity {
         mViewPager.setAdapter(mSectionsPagerAdapter);
     }
 
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.

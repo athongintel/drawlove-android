@@ -35,7 +35,7 @@ public class ChatgroupFriendFragment extends Fragment{
     ListView liUser;
     RadioGroup rgrJoin;
     TextView txtInfo;
-    ArrayAdapter<User> arJoined;
+
     ArrayAdapter<User> arNotyet;
     Group chatGroup;
 
@@ -57,30 +57,41 @@ public class ChatgroupFriendFragment extends Fragment{
                 User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
                 switch (checkedId){
                     case R.id.rdJoined:
-                        if (arJoined == null){
-                            ArrayList<User> joined = new ArrayList<User>();
-                            //-- check for friends that joined this conversation
-                            for (User u : currentUser.friends) {
-                                if (chatGroup.members.contains(u._id)){
-                                    joined.add(u);
-                                }
+                        ArrayAdapter<User> arJoined;
+                        ArrayList<User> listUsers = new ArrayList<User>();
+                        //-- check for friends that joined this conversation
+                        for (User u : currentUser.friends) {
+                            if (chatGroup.members.contains(u._id)){
+                                listUsers.add(u);
                             }
-                            arJoined = new JoinedUser(getActivity(), R.layout.friend_search_user, joined);
                         }
+                        arJoined = new JoinedUser(getActivity(), R.layout.friend_search_user, listUsers);
                         liUser.setAdapter(arJoined);
+                        if (listUsers.size() > 0) {
+                            txtInfo.setVisibility(View.GONE);
+                        }
+                        else{
+                            txtInfo.setText("You're all alone here. Invite someone now!");
+                            txtInfo.setVisibility(View.VISIBLE);
+                        }
                         break;
                     case R.id.rdNotyet:
-                        if (arNotyet == null){
-                            ArrayList<User> joined = new ArrayList<User>();
-                            //-- check for friends that not joined this conversation
-                            for (User u : currentUser.friends) {
-                                if (!chatGroup.members.contains(u._id)){
-                                    joined.add(u);
-                                }
+                        ArrayAdapter<User> arNotyet;
+                        ArrayList<User> listUsersNotyet = new ArrayList<User>();
+                        //-- check for friends that joined this conversation
+                        for (User u : currentUser.friends) {
+                            if (!chatGroup.members.contains(u._id)) {
+                                listUsersNotyet.add(u);
                             }
-                            arNotyet = new NotJoinedUser(getActivity(), R.layout.friend_search_user, joined);
                         }
+                        arNotyet = new JoinedUser(getActivity(), R.layout.friend_search_user, listUsersNotyet);
                         liUser.setAdapter(arNotyet);
+                        if (listUsersNotyet.size() > 0) {
+                            txtInfo.setVisibility(View.GONE);
+                        } else {
+                            txtInfo.setText("All your friends has joined. Enjoy!");
+                            txtInfo.setVisibility(View.VISIBLE);
+                        }
                         break;
                     default:
                         break;
@@ -115,7 +126,6 @@ public class ChatgroupFriendFragment extends Fragment{
             User u = users.get(position);
             TextView txtChatID = (TextView) thisView.findViewById(R.id.txtChatID);
 
-
             txtChatID.setText(u.chatID);
 
             return thisView;
@@ -138,6 +148,12 @@ public class ChatgroupFriendFragment extends Fragment{
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             LayoutInflater inflater = getActivity().getLayoutInflater();
             View thisView = (View) inflater.inflate(resource, null, false);
+
+            User u = users.get(position);
+            TextView txtChatID = (TextView) thisView.findViewById(R.id.txtChatID);
+
+            txtChatID.setText(u.chatID);
+
             return thisView;
         }
     }
