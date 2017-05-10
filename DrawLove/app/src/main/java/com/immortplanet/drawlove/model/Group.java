@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class Group extends DataModel {
     public String _id;
     public String name;
-    public String[] members;
+    public ArrayList<String> members;
     public ArrayList<Message> messages;
 
     public Group(JSONObject jsonObject){
@@ -21,9 +21,9 @@ public class Group extends DataModel {
             _id = jsonObject.getString("_id");
             name = jsonObject.getString("name");
             JSONArray members = (JSONArray)jsonObject.getJSONArray("members");
-            this.members = new String[members.length()];
+            this.members = new ArrayList<>();
             for (int j=0; j<members.length(); j++){
-                this.members[j] = members.getString(j);
+                this.members.add(members.getString(j));
             }
             messages = new ArrayList<>();
         } catch (JSONException e) {

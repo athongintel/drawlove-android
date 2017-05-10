@@ -20,9 +20,17 @@ router.route('/login')
 			else{
 				req.session['currentUser'] = user;
 				UserServices.activeUsers[user._id] = user;
-				//-- TODO: notify to this user's current active friends
-
-				res.status(200).json(user);
+				UserServices.getAllFriends(user, function(err, friends){
+					if (!err && friends){
+						var result = {};
+						result["user"] = user;
+						result["friends"] = friends;
+						res.status(200).json(result);
+					}
+					else{
+						res.status(500).json({"reasonMessage" : err});
+					}
+				});
 			}
 		});
 	});

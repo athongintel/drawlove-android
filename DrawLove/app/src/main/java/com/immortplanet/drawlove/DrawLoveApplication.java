@@ -11,6 +11,10 @@ import java.net.CookieManager;
 
 public class DrawLoveApplication extends Application {
 
+//    public static String DOMAIN = "http://drawlove.immortplanet.com";
+    public static String DOMAIN = "http://10.0.2.2:8083";
+
+
     @Override
     public void onCreate(){
         super.onCreate();

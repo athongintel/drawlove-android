@@ -12,33 +12,27 @@
         android:layout_height="wrap_content"
         android:text="In this conversation" />
 
-    <LinearLayout
+    <RadioGroup
+        android:id="@+id/rgrJoin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:orientation="horizontal">
 
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
+        <RadioButton
+            android:id="@+id/rdJoined"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Joined" />
 
-            <RadioButton
-                android:id="@+id/rdNotyet"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Not joined yet" />
+        <RadioButton
+            android:id="@+id/rdNotyet"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Not joined yet" />
 
-            <RadioButton
-                android:id="@+id/rdJoined"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Joined" />
-        </RadioGroup>
-
-    </LinearLayout>
+    </RadioGroup>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -47,7 +41,8 @@
         <ListView
             android:id="@+id/liUser"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
         <TextView
             android:id="@+id/txtInfo"
@@ -55,7 +50,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="[info]" />
-
     </FrameLayout>
 
 </LinearLayout>

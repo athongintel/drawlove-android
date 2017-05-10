@@ -101,10 +101,18 @@ public class LoginActivity extends Activity {
                             editor.commit();
                         }
                         prLogin.setVisibility(View.GONE);
-                        User currentUser = new User(jsonObject);
+                        User currentUser = null;
+                        try {
+                            currentUser = new User(jsonObject.getJSONObject("user"));
+                            currentUser.friends = new ArrayList<User>();
+                            JSONArray arFriends = jsonObject.getJSONArray("friends");
+                            for (int i=0; i<arFriends.length(); i++){
+                                currentUser.friends.add(new User(arFriends.getJSONObject(i)));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         DataSingleton.getDataSingleton().put("currentUser", currentUser);
-                        HashMap<String, User> allUsers = (HashMap<String, User>) DataSingleton.getDataSingleton().get("allUsers");
-                        allUsers.put(currentUser._id, currentUser);
 
                         Intent iChat = new Intent(getApplicationContext(), ChatActivity.class);
                         startActivity(iChat);

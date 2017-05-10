@@ -152,7 +152,7 @@ public class ChatGroupFragment extends Fragment {
                 TextView txtMemberCount = (TextView)groupView.findViewById(R.id.txtMemberCount);
 
                 txtGroupName.setText(arrayList.get(position).name);
-                txtMemberCount.setText(arrayList.get(position).members.length + " member(s)");
+                txtMemberCount.setText(arrayList.get(position).members.size() + " member(s)");
                 onClickListener = new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

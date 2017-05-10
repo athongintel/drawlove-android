@@ -14,6 +14,10 @@ import android.view.ViewGroup;
 
 import android.view.WindowManager;
 
+import com.immortplanet.drawlove.fragment.chatgroup.ChatgroupChatFragment;
+import com.immortplanet.drawlove.fragment.chatgroup.ChatgroupFriendFragment;
+import com.immortplanet.drawlove.fragment.chatgroup.ChatgroupGameFragment;
+import com.immortplanet.drawlove.fragment.chatgroup.ChatgroupSettingFragment;
 import com.immortplanet.drawlove.model.DataSingleton;
 import com.immortplanet.drawlove.model.Group;
 import com.immortplanet.drawlove.model.Message;
@@ -41,6 +45,7 @@ public class ChatGroupActivity extends Activity {
 
     String groupID;
     String groupName;
+    Group chatGroup;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -77,6 +82,7 @@ public class ChatGroupActivity extends Activity {
                 @Override
                 public void finished(JSONObject jsonObject) {
                     try {
+                        chatGroup = new Group(jsonObject.getJSONObject("group"));
                         JSONArray messages = jsonObject.getJSONArray("messages");
                         for (int i=0; i<messages.length(); i++) {
                             g[0].messages.add(new Message(messages.getJSONObject(i)));
@@ -122,11 +128,13 @@ public class ChatGroupActivity extends Activity {
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    return new ChatFragment();
+                    return new ChatgroupChatFragment(chatGroup);
                 case 1:
-                    return new MemberFragment();
+                    return new ChatgroupGameFragment(chatGroup);
                 case 2:
-                    return new SettingFragment();
+                    return new ChatgroupFriendFragment(chatGroup);
+                case 3:
+                    return new ChatgroupSettingFragment(chatGroup);
                 default:
                     return null;
             }
@@ -134,50 +142,9 @@ public class ChatGroupActivity extends Activity {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "SECTION 1";
-                case 1:
-                    return "SECTION 2";
-                case 2:
-                    return "SECTION 3";
-            }
-            return null;
+            //-- Show 4 total pages.
+            return 4;
         }
     }
 
-    public static class ChatFragment extends Fragment{
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_chat_group_chat, container, false);
-            return rootView;
-        }
-    }
-
-    public static class MemberFragment extends Fragment{
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_chat_group_game, container, false);
-            return rootView;
-        }
-
-    }
-
-    public static class SettingFragment extends Fragment{
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_chat_group_setting, container, false);
-            return rootView;
-        }
-    }
 }

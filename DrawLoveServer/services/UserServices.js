@@ -49,6 +49,10 @@ var UserServices = {
 		});
 	},
 
+	getAllFriends: function(user, cb){
+		User.find({"_id" : {$in : user.friends}}).exec(cb);
+	},
+
 	requestFriend: function(currentUser, receiverID, cb){
 		if (currentUser._id == receiverID){
 			cb("Cannot make friend to yourself");

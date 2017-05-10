@@ -13,6 +13,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static com.immortplanet.drawlove.DrawLoveApplication.DOMAIN;
+
 /**
  * Created by tom on 4/30/17.
  */
@@ -28,9 +30,6 @@ public class HttpRequest extends AsyncTask{
             this.obj = obj;
         }
     }
-
-    public static String DOMAIN = "http://drawlove.immortplanet.com";
-//    public static String DOMAIN = "http://10.0.2.2:8083";
 
     String method;
     String route;
