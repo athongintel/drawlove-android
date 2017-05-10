@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,7 @@ public class ChatGroupFragment extends Fragment {
 
     View thisView;
     GroupAdapter adapter;
-    ArrayList<Group> arList;
+
 
     public ChatGroupFragment() {
         // Required empty public constructor
@@ -51,55 +52,73 @@ public class ChatGroupFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         thisView = inflater.inflate(R.layout.fragment_chat_group, container, false);
-        final GridView gvGroups = (GridView)(thisView.findViewById(R.id.gvGroups));
-        final ProgressBar prLoading = (ProgressBar)(thisView.findViewById(R.id.prLoading));
-        final TextView txtLoadingInfo = (TextView)(thisView.findViewById(R.id.txtLoadingInfo));
+        final GridView gvGroups = (GridView) (thisView.findViewById(R.id.gvGroups));
+        final ProgressBar prLoading = (ProgressBar) (thisView.findViewById(R.id.prLoading));
+        final TextView txtLoadingInfo = (TextView) (thisView.findViewById(R.id.txtLoadingInfo));
 
         prLoading.setVisibility(View.VISIBLE);
         txtLoadingInfo.setText("Loading groups...");
-        arList = new ArrayList<>();
-        final User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
-        currentUser.groups = new HashMap<>();
 
-        HttpRequest request = new HttpRequest("GET", "/group", null, new HttpCallback() {
-            @Override
-            public void finished(JSONObject jsonObject) {
+        final User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
+
+        if (adapter != null){
+            prLoading.setVisibility(View.GONE);
+            txtLoadingInfo.setVisibility(View.GONE);
+            gvGroups.setAdapter(adapter);
+        }
+        else {
+            final ArrayList<Group> arList = new ArrayList<>();
+            if (currentUser.groups == null) {
+                currentUser.groups = new HashMap<>();
+                HttpRequest request = new HttpRequest("GET", "/group", null, new HttpCallback() {
+                    @Override
+                    public void finished(JSONObject jsonObject) {
+                        //-- populate ListView with items
+                        JSONArray groups = null;
+                        try {
+                            groups = (JSONArray) (jsonObject.getJSONArray("groups"));
+                            for (int i = 0; i < groups.length(); i++) {
+                                Group g = new Group((JSONObject) groups.get(i));
+                                arList.add(g);
+                                currentUser.groups.put(g._id, g);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        prLoading.setVisibility(View.GONE);
+                        txtLoadingInfo.setVisibility(View.GONE);
+                        adapter = new GroupAdapter(getActivity(), 0, arList);
+                        gvGroups.setAdapter(adapter);
+                    }
+                }, new HttpCallback() {
+                    @Override
+                    public void finished(JSONObject jsonObject) {
+                        prLoading.setVisibility(View.GONE);
+                        txtLoadingInfo.setText("Error occurred.");
+                    }
+                });
+                request.execute();
+            } else {
+                for (Group g : currentUser.groups.values()) {
+                    arList.add(g);
+                }
                 prLoading.setVisibility(View.GONE);
                 txtLoadingInfo.setVisibility(View.GONE);
-                //-- populate ListView with items
-                JSONArray groups = null;
-                try {
-                    groups = (JSONArray)(jsonObject.getJSONArray("groups"));
-                    for (int i=0; i<groups.length(); i++){
-                        Group g = new Group((JSONObject) groups.get(i));
-                        arList.add(g);
-                        currentUser.groups.put(g._id, g);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
                 adapter = new GroupAdapter(getActivity(), 0, arList);
                 gvGroups.setAdapter(adapter);
             }
-        }, new HttpCallback() {
-            @Override
-            public void finished(JSONObject jsonObject) {
-                prLoading.setVisibility(View.GONE);
-                txtLoadingInfo.setText("Error occurred.");
-            }
-        });
-        request.execute();
+        }
         return thisView;
     }
 
-    class GroupAdapter extends ArrayAdapter<Group>{
+    private class GroupAdapter extends ArrayAdapter<Group>{
 
         ArrayList<Group> arrayList;
         Context context;
         LayoutInflater inflater;
         int resource;
 
-        public GroupAdapter(Context context, int resource, ArrayList<Group> objects) {
+        GroupAdapter(Context context, int resource, ArrayList<Group> objects) {
             super(context, resource, objects);
             this.arrayList = objects;
             this.context = context;
@@ -121,8 +140,9 @@ public class ChatGroupFragment extends Fragment {
             }
         }
 
+        @NonNull
         @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
             View groupView = null;
             View.OnClickListener onClickListener = null;
             if (position < arrayList.size()){
@@ -170,6 +190,8 @@ public class ChatGroupFragment extends Fragment {
                                         public void finished(JSONObject jsonObject) {
                                             //-- reload
                                             Group g = new Group(jsonObject);
+                                            final User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
+                                            currentUser.groups.put(g._id, g);
                                             adapter.add(g);
                                         }
                                     }, new HttpCallback() {

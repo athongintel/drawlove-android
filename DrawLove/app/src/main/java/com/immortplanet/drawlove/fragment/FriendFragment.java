@@ -147,7 +147,7 @@ public class FriendFragment extends Fragment implements View.OnClickListener{
                     btRequest.setEnabled(true);
                     btNotification.setEnabled(true);
 
-                    selectFragment(R.id.btSearch);
+                    selectFragment(R.id.btFriend);
 
                 } catch (JSONException e) {
                     layoutInfo.setVisibility(View.VISIBLE);

@@ -55,14 +55,6 @@
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/btSearch"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:background="@color/colorTabNotSelected"
-                android:src="@drawable/fr_0" />
-
-            <ImageButton
                 android:id="@+id/btFriend"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
@@ -85,6 +77,14 @@
                 android:layout_weight="1"
                 android:background="@color/colorTabNotSelected"
                 android:src="@drawable/fr_2" />
+
+            <ImageButton
+                android:id="@+id/btSearch"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@color/colorTabNotSelected"
+                android:src="@drawable/fr_0" />
 
         </LinearLayout>
     </LinearLayout>
