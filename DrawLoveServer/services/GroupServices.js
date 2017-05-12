@@ -1,5 +1,6 @@
 var Group = require('../models/Group.js');
 var Message = require('../models/Message.js');
+var Request = require('../models/Request.js');
 
 var GroupServices = {
 
@@ -20,6 +21,10 @@ var GroupServices = {
 
 	getLatestMessages: function(groupID, count, cb){
 		Message.find({'group': groupID}).sort({sentDate: 'desc'}).limit(count).exec(cb);
+	},
+
+	getAllRelatedRequests: function(groupID, cb){
+		Request.find({"type": "group", "requestData": [groupID]}).exec(cb);
 	}
 }
 

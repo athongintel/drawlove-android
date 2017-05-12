@@ -50,7 +50,7 @@ router.route('/request/add_to_group')
 		var groupID = req.body['groupID'];
 		if (userID){
 			UserServices.requestAddUserToGroup(req.session['currentUser'], userID, groupID, function(err, request){
-				if (!err){
+				if (!err && request){
 					res.status(200).json(request);
 				}
 				else{
@@ -85,10 +85,8 @@ router.route('/request/action')
 router.route('/request/all')
 	.get(function(req, res){
 		//-- get all friends and requests received
-		// var userIDs = [];
-		var result  = {
-			// "users": {}
-		};
+		var result  = {};
+
 		UserServices.getRequestSent(req.session['currentUser']._id, function(err, sentRequests){
 			if (!err && sentRequests){
 				result["sentRequests"] = sentRequests;
@@ -98,24 +96,7 @@ router.route('/request/all')
 						UserServices.findUsersByIds(req.session['currentUser'].friends, function(err, friends){
 							if (!err && friends){
 								result["friends"] = friends;
-								//-- get userIDS
-								// for (var i=0; i<sentRequests.length; i++){
-								// 	userIDs.push(sentRequests[i].receiver._id);
-								// }
-								// for (var i=0; i<receivedRequests.length; i++){
-								// 	userIDs.push(receivedRequests[i].sender._id);
-								// }
-								// UserServices.getUsersByIds(userIDs, function(err, docs){
-								// 	if (!err && docs){
-								// 		for (var i=0; i<docs.length; i++){
-								// 			result.users[docs[i]._id] = docs[i];
-								// 		}
-										res.status(200).json(result);
-								// 	}
-								// 	else{
-								// 		res.status(500).json({reasonMessage: err});
-								// 	}
-								// });
+								res.status(200).json(result);
 							}
 							else{
 								res.status(500).json({reasonMessage: err});

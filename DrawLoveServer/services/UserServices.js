@@ -151,15 +151,34 @@ var UserServices = {
 			GroupServices.getGroupById(groupID, function(err, group){
 				if (!err && group){
 					if (group.members.indexOf(currentUser._id) >= 0){
-						User.findById(receiverID, function(err, user){
-							if (!err && user){
-								Request = new Request({"sender": currentUser._id, "receiver": user._id, "type": "group", "requestData": [groupID, group.name, currentUser.chatID, user.chatID]});
-								request.save(cb);
-							}
-							else{
-								cb("User not found.");
-							}
-						});
+						if (group.members.indexOf(receiverID) >= 0){
+							//-- user is already in
+							cb("User is already in this group");
+						}
+						else{
+							//-- check if there is a pending or blocked request of this user to this group
+							Request.find({"receiver": receiverID, "type": "group", "status": {$in : ["pending", "blocked"]}, "requestData": [groupID]}).exec(function(err, requests){
+								if (!err){
+									if (requests && requests.length){
+										cb("User is already invited");
+									}
+									else{
+										User.findById(receiverID, function(err, user){
+											if (!err && user){
+												Request = new Request({"sender": currentUser._id, "receiver": user._id, "type": "group", "requestData": [groupID, group.name, currentUser.chatID, user.chatID]});
+												request.save(cb);
+											}
+											else{
+												cb("User not found.");
+											}
+										});
+									}
+								}
+								else{
+									cb(err, null);
+								}
+							});
+						}
 					}
 					else{
 						cb("You do not have right to access this group.");

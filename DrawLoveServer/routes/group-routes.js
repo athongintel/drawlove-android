@@ -45,13 +45,22 @@ router.route('/chat')
 				if (!err && group){
 					console.log(group);
 					if (group.members.indexOf(req.session["currentUser"]._id) >= 0){
-						//-- get latest count message then return
+						//-- get latest count messages
 						var result = {};
 						result["group"] = group;
 						GroupServices.getLatestMessages(groupID, messageCount, function(err, messages){
 							if (!err && messages){
 								result["messages"] = messages;
-								res.status(200).json(result);
+								//-- get all request related to this group
+								GroupServices.getAllRelatedRequests(groupID, function(err, requests){
+									if (!err && requests){
+										result["requests"] = requests;
+										res.status(200).json(result);
+									}
+									else{
+										res.status(500).json({"reasonMessage": "Cannot load group requests"});
+									}
+								});
 							}
 							else{
 								res.status(500).json({"reasonMessage": "Cannot load group messages"});
