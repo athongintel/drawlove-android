@@ -1,5 +1,6 @@
 var User = require('../models/User.js');
 var Request = require('../models/Request.js');
+var Group = require('../models/Group.js');
 var randomstring = require('randomstring');
 var crypto = require('crypto');
 var MailServices = require('./MailServices.js');
@@ -172,7 +173,7 @@ var UserServices = {
 							Request.find({"receiver": receiverID, "type": "group", "status": {$in : ["pending", "blocked"]}, "requestData": groupID}).exec(function(err, requests){
 								if (!err){
 									if (requests && requests.length){
-										cb("User is already invited");
+										cb("User is already being invited");
 									}
 									else{
 										User.findById(receiverID, function(err, user){
