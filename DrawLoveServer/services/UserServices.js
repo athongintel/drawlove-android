@@ -104,7 +104,14 @@ var UserServices = {
 														User.findById(currentUser._id, function(err, d){
 															if (!err && d){
 																d.friends.push(request.sender);
-																d.save(cb);
+																d.save(function(err, cur){
+																	if (!err && cur){
+																		cb(null, sender);
+																	}
+																	else{
+																		cb(err, null);
+																	}
+																});
 															}
 															else{
 																cb(err || "Cannot add friend right now.", null);
@@ -123,10 +130,10 @@ var UserServices = {
 									}
 									else if (request.type == "group"){
 										var groupID = request.requestData[0];
-										Group.findById(groupID, function(err, doc){
-											if (!err && doc){
-												doc.members.push(request.receiver);
-												doc.save(cb);
+										Group.findById(groupID, function(err, group){
+											if (!err && group){
+												group.members.push(request.receiver);
+												group.save(cb);
 											}
 											else{
 												cb(err || "Group not found.", null);

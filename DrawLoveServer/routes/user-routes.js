@@ -81,9 +81,9 @@ router.route('/request/action')
 		var requestID = req.body["requestID"];
 		var status = req.body["status"];
 		if (requestID && status){
-			UserServices.answerRequest(req.session["currentUser"], requestID, status, function(err, request){
-				if (!err && request){
-					res.status(200).json({});
+			UserServices.answerRequest(req.session["currentUser"], requestID, status, function(err, result){
+				if (!err && result){
+					res.status(200).json(result);
 				}
 				else{
 					res.status(500).json({reasonMessage: err});
