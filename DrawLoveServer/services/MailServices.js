@@ -26,7 +26,7 @@ var MailServices = {
 		token = encodeURIComponent(token);
 		mailOptions["to"] = user.email;
 		mailOptions["html"] = "Welcome to DrawLove. Please click on the link below to finish registration progress. </br>"
-		mailOptions["html"] += '<a href="' + config.fullHost + "/email_verification?userID=" + String(user._id) + "&token=" + token + '">Finish your account creation</a>';
+		mailOptions["html"] += '<a href="' + config.host + "/email_verification?userID=" + String(user._id) + "&token=" + token + '">Finish your account creation</a>';
 		transporter.sendMail(mailOptions, function(err, info){
 			cb(err, random);
 		});

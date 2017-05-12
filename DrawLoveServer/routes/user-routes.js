@@ -11,6 +11,19 @@ router.route('/')
 		res.status(200).json(req.session['currentUser']);
 	});
 
+router.route('/get_users')
+	.post(function(req, res){
+		var userIDs = req.body["userIDs"];
+		UserServices.getUsersByIDs(req.session['currentUser'], userIDs, function(err, users){
+			if (!err & users){
+				res.status(200).json({"users": users});
+			}
+			else{
+				res.status(500).json({"reasonMessage": err});
+			}
+		});
+	});
+
 router.route('/search')
 	.post(function(req, res){
 		var search = req.body['search'];

@@ -17,6 +17,18 @@ var UserServices = {
 		User.find({"_id" : {$in : userIDs}}, cb);
 	},
 
+	getUsersByIDs: function(currentUser, userIDs, cb){
+		findUsersByIds(userIDs, function(err, users){
+			if (!err && users){
+				//-- TODO: filter information
+				cb(null, users);
+			}
+			else{
+				cb(err, null);
+			}
+		});
+	},
+
 	createNewUser : function(chatID, password, email, cb){
 		//-- random salt
 		var salt = randomstring.generate(8);
