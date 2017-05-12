@@ -39,7 +39,6 @@ router.route('/login')
 								res.status(500).json({reasonMessage: err});
 							}
 						});
-						res.status(200).json(result);
 					}
 					else{
 						res.status(500).json({"reasonMessage" : err});
