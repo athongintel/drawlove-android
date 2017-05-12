@@ -22,7 +22,7 @@ public class Request extends DataModel{
     public String status;
     public String type;
     public String[] requestData;
-    public String requestDate;
+    public String responseDate;
 
     public Request(JSONObject jsonObject){
         try{
@@ -36,7 +36,7 @@ public class Request extends DataModel{
             for (int i=0; i<data.length(); i++){
                 requestData[i] = data.getString(i);
             }
-            requestDate = NodeDateTime.getDateFromID(_id);
+            responseDate = jsonObject.getString("responseDate");
         }
         catch(JSONException e){
             e.printStackTrace();

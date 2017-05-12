@@ -3,46 +3,51 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView8"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="In this conversation" />
+        android:background="@android:color/holo_blue_dark"
+        android:orientation="vertical"
+        android:padding="10dp">
 
-    <RadioGroup
-        android:id="@+id/rgrJoin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/rdJoined"
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Joined" />
+            android:text="In this conversation"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
 
-        <RadioButton
-            android:id="@+id/rdNotyet"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Not joined yet" />
+        <RadioGroup
+            android:id="@+id/rgrJoin"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-    </RadioGroup>
+            <RadioButton
+                android:id="@+id/rdJoined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Joined"
+                android:textColor="@android:color/white" />
+
+            <RadioButton
+                android:id="@+id/rdNotyet"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Not joined yet"
+                android:textColor="@android:color/white" />
+
+        </RadioGroup>
+    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <ListView
-            android:id="@+id/liUser"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
 
         <TextView
             android:id="@+id/txtInfo"
@@ -50,6 +55,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="[info]" />
+
+        <ListView
+            android:id="@+id/liUser"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
     </FrameLayout>
 

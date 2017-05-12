@@ -21,6 +21,7 @@ import com.immortplanet.drawlove.fragment.chatgroup.ChatgroupSettingFragment;
 import com.immortplanet.drawlove.model.DataSingleton;
 import com.immortplanet.drawlove.model.Group;
 import com.immortplanet.drawlove.model.Message;
+import com.immortplanet.drawlove.model.Request;
 import com.immortplanet.drawlove.model.User;
 import com.immortplanet.drawlove.util.HttpCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
@@ -28,6 +29,8 @@ import com.immortplanet.drawlove.util.HttpRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class ChatGroupActivity extends Activity {
 
@@ -83,6 +86,11 @@ public class ChatGroupActivity extends Activity {
                 public void finished(JSONObject jsonObject) {
                     try {
                         chatGroup = new Group(jsonObject.getJSONObject("group"));
+                        chatGroup.requests = new ArrayList<>();
+                        JSONArray requests = jsonObject.getJSONArray("requests");
+                        for (int i=0; i<requests.length(); i++){
+                            chatGroup.requests.add(new Request(requests.getJSONObject(i)));
+                        }
                         JSONArray messages = jsonObject.getJSONArray("messages");
                         for (int i=0; i<messages.length(); i++) {
                             g[0].messages.add(new Message(messages.getJSONObject(i)));

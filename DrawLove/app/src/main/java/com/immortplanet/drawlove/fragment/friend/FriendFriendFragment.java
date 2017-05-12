@@ -39,7 +39,7 @@ public class FriendFriendFragment extends Fragment {
         ListView liUser = (ListView)thisView.findViewById(R.id.liFriends);
         User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
         if (currentUser.friends.isEmpty()){
-            txtInfo.setText("You don't have any friend for the moment. Send a request now!");
+            txtInfo.setText("You don't have any friend for the moment.");
             txtInfo.setVisibility(View.VISIBLE);
         }
         liUser.setAdapter(new FriendFriendFragment.FriendAdapter(getActivity(), R.layout.friend_search_user, currentUser.friends));

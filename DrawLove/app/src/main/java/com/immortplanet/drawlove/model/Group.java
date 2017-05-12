@@ -16,6 +16,8 @@ public class Group extends DataModel {
     public ArrayList<String> members;
     public ArrayList<Message> messages;
 
+    public ArrayList<Request> requests;
+
     public Group(JSONObject jsonObject){
         try {
             _id = jsonObject.getString("_id");

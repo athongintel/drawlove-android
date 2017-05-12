@@ -103,20 +103,49 @@ public class LoginActivity extends Activity {
                         prLogin.setVisibility(View.GONE);
                         User currentUser = null;
                         try {
+                            HashMap<String, User> allUsers = new HashMap<String, User>();
+
                             currentUser = new User(jsonObject.getJSONObject("user"));
                             currentUser.friends = new ArrayList<User>();
                             JSONArray arFriends = jsonObject.getJSONArray("friends");
                             for (int i=0; i<arFriends.length(); i++){
-                                currentUser.friends.add(new User(arFriends.getJSONObject(i)));
+                                User u = new User(arFriends.getJSONObject(i));
+                                currentUser.friends.add(u);
+                                allUsers.put(u._id, u);
                             }
+                            allUsers.put(currentUser._id, currentUser);
+
+                            currentUser.sentRequests = new ArrayList<>();
+                            JSONArray arRequest = (JSONArray)jsonObject.getJSONArray("sentRequests");
+                            for (int i=0; i< arRequest.length(); i++){
+                                Request request = new Request((JSONObject)arRequest.get(i));
+                                currentUser.sentRequests.add(request);
+                            }
+
+                            currentUser.receivedRequests = new ArrayList<>();
+                            JSONArray arReceivedRequests = (JSONArray)jsonObject.getJSONArray("receivedRequests");
+                            for (int i=0; i< arReceivedRequests.length(); i++){
+                                Request request = new Request((JSONObject)arReceivedRequests.get(i));
+                                currentUser.receivedRequests.add(request);
+                            }
+
+                            DataSingleton.getDataSingleton().put("currentUser", currentUser);
+                            DataSingleton.getDataSingleton().put("allUsers", allUsers);
+
+                            Intent iChat = new Intent(getApplicationContext(), ChatActivity.class);
+                            startActivity(iChat);
+                            finish();
                         } catch (JSONException e) {
+                            SimpleDialog dialog = new SimpleDialog(LoginActivity.this, "Error", "Cannot load data from server.", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    finish();
+                                }
+                            });
+                            dialog.show();
                             e.printStackTrace();
                         }
-                        DataSingleton.getDataSingleton().put("currentUser", currentUser);
-
-                        Intent iChat = new Intent(getApplicationContext(), ChatActivity.class);
-                        startActivity(iChat);
-                        finish();
                     }
                 }, new HttpCallback() {
                     @Override

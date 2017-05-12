@@ -20,17 +20,20 @@ import android.widget.TextView;
 
 import com.immortplanet.drawlove.R;
 import com.immortplanet.drawlove.model.DataSingleton;
+import com.immortplanet.drawlove.model.Group;
 import com.immortplanet.drawlove.model.Request;
 import com.immortplanet.drawlove.model.User;
 import com.immortplanet.drawlove.util.ConfirmDialog;
 import com.immortplanet.drawlove.util.HttpCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
+import com.immortplanet.drawlove.util.NodeDateTime;
 import com.immortplanet.drawlove.util.SimpleDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -53,7 +56,7 @@ public class FriendNotificationFragment extends Fragment {
         txtInfo.setVisibility(View.GONE);
         User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
         if (currentUser.receivedRequests.isEmpty()){
-            txtInfo.setText("Nothing to show here.");
+            txtInfo.setText("No notification to show.");
             txtInfo.setVisibility(View.VISIBLE);
         }
         liRequest.setAdapter(new FriendNotificationFragment.RequestAdapter(getActivity(), R.layout.notification_fragment, currentUser.receivedRequests));
@@ -99,15 +102,15 @@ public class FriendNotificationFragment extends Fragment {
             final Spinner spAction = (Spinner) userView.findViewById((R.id.spAction));
             spAction.setVisibility(View.GONE);
 
-            if (request.type.equals("friend")){
+            if ("friend".equals(request.type)){
                 txtSenderReceiver.setText(request.requestData[0] + " would like to be your friend");
             }
-            else if (request.type.equals("group")){
+            else if ("group".equals(request.type)){
                 txtSenderReceiver.setText(request.requestData[2] + " tried to add you to group " + request.requestData[1]);
             }
 
             if (request.status.equals("pending")){
-//                txtStatus.setText("Choose an action");
+                txtDate.setText(NodeDateTime.getDateFromID(request._id));
                 txtStatus.setVisibility(View.GONE);
                 List<String> arActions = new ArrayList<String>();
                 arActions.add("Select an action");
@@ -146,15 +149,45 @@ public class FriendNotificationFragment extends Fragment {
                                     HttpRequest httpRequest = new HttpRequest("POST", "/user/request/action", jsonObject, new HttpCallback() {
                                         @Override
                                         public void finished(JSONObject jsonObject) {
-                                            spAction.setVisibility(View.GONE);
-                                            txtStatus.setText((String) spAction.getSelectedItem());
                                             //-- update request status
                                             request.status = selectedResponse;
+                                            spAction.setVisibility(View.GONE);
+                                            if ("accepted".equals(selectedResponse)){
+                                                txtStatus.setText("Accepted");
+                                                User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
+                                                if ("friend".equals(request.type)){
+                                                    //-- a new user is returned to be friend
+                                                    User u = new User(jsonObject);
+                                                    HashMap<String, User> allUsers = (HashMap<String, User>)DataSingleton.getDataSingleton().get("allUsers");
+                                                    currentUser.friends.add(u);
+                                                    allUsers.put(u._id, u);
+                                                }
+                                                else if ("group".equals(request.type)){
+                                                    //-- add this new group
+                                                    Group g = new Group(jsonObject);
+                                                    currentUser.groups.put(g._id, g);
+                                                }
+                                            }
+                                            else if ("blocked".equals(selectedResponse)){
+                                                txtStatus.setText("Blocked");
+                                            }
+                                            else if ("rejected".equals(selectedResponse)){
+                                                txtStatus.setText("Rejected");
+                                            }
+                                            txtStatus.setVisibility(View.VISIBLE);
                                         }
                                     }, new HttpCallback() {
                                         @Override
                                         public void finished(JSONObject jsonObject) {
+                                            selectedResponse = "";
                                             spAction.setSelection(0);
+                                            SimpleDialog errDialog = new SimpleDialog(getActivity(), "Error", "Cannot update request status", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            });
+                                            errDialog.show();
                                         }
                                     });
                                     httpRequest.execute();
@@ -178,19 +211,17 @@ public class FriendNotificationFragment extends Fragment {
                 });
                 spAction.setVisibility(View.VISIBLE);
             }
-            else if (request.status.equals("accepted")){
-                txtStatus.setText("Accepted");
-            }
-            else if (request.status.equals("rejected")){
-                txtStatus.setText("Rejected");
+            else {
+                txtDate.setText(request.responseDate);
+                if (request.status.equals("accepted")) {
+                    txtStatus.setText("Accepted");
+                } else if (request.status.equals("rejected")) {
+                    txtStatus.setText("Rejected");
 
+                } else if (request.status.equals("blocked")) {
+                    txtStatus.setText("Blocked");
+                }
             }
-            else if (request.status.equals("blocked")){
-                txtStatus.setText("Blocked");
-            }
-
-            txtDate.setText(request.requestDate);
-
             return userView;
         }
     }

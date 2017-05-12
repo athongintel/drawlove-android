@@ -16,6 +16,7 @@ import com.immortplanet.drawlove.R;
 import com.immortplanet.drawlove.model.DataSingleton;
 import com.immortplanet.drawlove.model.Request;
 import com.immortplanet.drawlove.model.User;
+import com.immortplanet.drawlove.util.NodeDateTime;
 
 import java.util.ArrayList;
 /**
@@ -92,27 +93,27 @@ public class FriendRequestFragment extends Fragment {
 
             if (request.status.equals("pending")){
                 txtStatus.setText("Waiting for response");
+                txtDate.setText(NodeDateTime.getDateFromID(request._id));
                 btAction.setText("Cancel");
                 btAction.setVisibility(View.VISIBLE);
                 btAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        //-- TODO: add cancel action
                     }
                 });
             }
-            else if (request.status.equals("accepted")){
-                txtStatus.setText("Accepted");
-            }
-            else if (request.status.equals("rejected")){
-                txtStatus.setText("Rejected");
+            else {
+                txtDate.setText(request.responseDate);
+                if (request.status.equals("accepted")) {
+                    txtStatus.setText("Accepted");
+                } else if (request.status.equals("rejected")) {
+                    txtStatus.setText("Rejected");
 
+                } else if (request.status.equals("blocked")) {
+                    txtStatus.setText("Blocked");
+                }
             }
-            else if (request.status.equals("blocked")){
-                txtStatus.setText("Blocked");
-            }
-
-            txtDate.setText(request.requestDate);
 
             return userView;
         }

@@ -61,52 +61,45 @@ public class ChatGroupFragment extends Fragment {
 
         final User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
 
-        if (adapter != null){
+        final ArrayList<Group> arList = new ArrayList<>();
+        if (currentUser.groups == null) {
+            currentUser.groups = new HashMap<>();
+            HttpRequest request = new HttpRequest("GET", "/group", null, new HttpCallback() {
+                @Override
+                public void finished(JSONObject jsonObject) {
+                    //-- populate ListView with items
+                    JSONArray groups = null;
+                    try {
+                        groups = (JSONArray) (jsonObject.getJSONArray("groups"));
+                        for (int i = 0; i < groups.length(); i++) {
+                            Group g = new Group((JSONObject) groups.get(i));
+                            arList.add(g);
+                            currentUser.groups.put(g._id, g);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    prLoading.setVisibility(View.GONE);
+                    txtLoadingInfo.setVisibility(View.GONE);
+                    adapter = new GroupAdapter(getActivity(), 0, arList);
+                    gvGroups.setAdapter(adapter);
+                }
+            }, new HttpCallback() {
+                @Override
+                public void finished(JSONObject jsonObject) {
+                    prLoading.setVisibility(View.GONE);
+                    txtLoadingInfo.setText("Error occurred.");
+                }
+            });
+            request.execute();
+        } else {
+            for (Group g : currentUser.groups.values()) {
+                arList.add(g);
+            }
             prLoading.setVisibility(View.GONE);
             txtLoadingInfo.setVisibility(View.GONE);
+            adapter = new GroupAdapter(getActivity(), 0, arList);
             gvGroups.setAdapter(adapter);
-        }
-        else {
-            final ArrayList<Group> arList = new ArrayList<>();
-            if (currentUser.groups == null) {
-                currentUser.groups = new HashMap<>();
-                HttpRequest request = new HttpRequest("GET", "/group", null, new HttpCallback() {
-                    @Override
-                    public void finished(JSONObject jsonObject) {
-                        //-- populate ListView with items
-                        JSONArray groups = null;
-                        try {
-                            groups = (JSONArray) (jsonObject.getJSONArray("groups"));
-                            for (int i = 0; i < groups.length(); i++) {
-                                Group g = new Group((JSONObject) groups.get(i));
-                                arList.add(g);
-                                currentUser.groups.put(g._id, g);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        prLoading.setVisibility(View.GONE);
-                        txtLoadingInfo.setVisibility(View.GONE);
-                        adapter = new GroupAdapter(getActivity(), 0, arList);
-                        gvGroups.setAdapter(adapter);
-                    }
-                }, new HttpCallback() {
-                    @Override
-                    public void finished(JSONObject jsonObject) {
-                        prLoading.setVisibility(View.GONE);
-                        txtLoadingInfo.setText("Error occurred.");
-                    }
-                });
-                request.execute();
-            } else {
-                for (Group g : currentUser.groups.values()) {
-                    arList.add(g);
-                }
-                prLoading.setVisibility(View.GONE);
-                txtLoadingInfo.setVisibility(View.GONE);
-                adapter = new GroupAdapter(getActivity(), 0, arList);
-                gvGroups.setAdapter(adapter);
-            }
         }
         return thisView;
     }
