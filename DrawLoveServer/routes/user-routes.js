@@ -95,36 +95,4 @@ router.route('/request/action')
 		}
 	});
 
-router.route('/request/all')
-	.get(function(req, res){
-		//-- get all friends and requests received
-		var result  = {};
-
-		UserServices.getRequestSent(req.session['currentUser']._id, function(err, sentRequests){
-			if (!err && sentRequests){
-				result["sentRequests"] = sentRequests;
-				UserServices.getRequestReceived(req.session['currentUser']._id, function(err, receivedRequests){
-					if (!err && receivedRequests){
-						result["receivedRequests"] = receivedRequests;
-						UserServices.findUsersByIds(req.session['currentUser'].friends, function(err, friends){
-							if (!err && friends){
-								result["friends"] = friends;
-								res.status(200).json(result);
-							}
-							else{
-								res.status(500).json({reasonMessage: err});
-							}
-						});
-					}
-					else{
-						res.status(500).json({reasonMessage: err});
-					}
-				});
-			}
-			else{
-				res.status(500).json({reasonMessage: err});
-			}
-		});
-	});
-
 module.exports = router;

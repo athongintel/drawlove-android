@@ -14,23 +14,40 @@ router.route('/login')
 		var chatID = String(req.body['chatID']);
 		var password = String(req.body['password']);
 		UserServices.authenticateUser(chatID, password, function(err, user){
-			if (err){
-				res.status(500).json({reasonMessage: err});
-			}
-			else{
+			if (!err && user){
 				req.session['currentUser'] = user;
 				UserServices.activeUsers[user._id] = user;
+				var result = {};
+				result["user"] = user;
 				UserServices.getAllFriends(user, function(err, friends){
 					if (!err && friends){
-						var result = {};
-						result["user"] = user;
 						result["friends"] = friends;
+						UserServices.getRequestSent(user._id, function(err, sentRequests){
+							if (!err && sentRequests){
+								result["sentRequests"] = sentRequests;
+								UserServices.getRequestReceived(user._id, function(err, receivedRequests){
+									if (!err && receivedRequests){
+										result["receivedRequests"] = receivedRequests;
+										res.status(200).json(result);
+									}
+									else{
+										res.status(500).json({reasonMessage: err});
+									}
+								});
+							}
+							else{
+								res.status(500).json({reasonMessage: err});
+							}
+						});
 						res.status(200).json(result);
 					}
 					else{
 						res.status(500).json({"reasonMessage" : err});
 					}
 				});
+			}
+			else{
+				res.status(500).json({reasonMessage: err});
 			}
 		});
 	});
