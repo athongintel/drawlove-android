@@ -177,11 +177,11 @@ var UserServices = {
 									else{
 										User.findById(receiverID, function(err, user){
 											if (!err && user){
-												Request = new Request({"sender": currentUser._id, "receiver": user._id, "type": "group", "requestData": [groupID, group.name, currentUser.chatID, user.chatID]});
+												var request = new Request({"sender": currentUser._id, "receiver": user._id, "type": "group", "requestData": [groupID, group.name, currentUser.chatID, user.chatID]});
 												request.save(cb);
 											}
 											else{
-												cb("User not found.");
+												cb("User not found");
 											}
 										});
 									}
