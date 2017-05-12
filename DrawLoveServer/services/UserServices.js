@@ -169,7 +169,7 @@ var UserServices = {
 						}
 						else{
 							//-- check if there is a pending or blocked request of this user to this group
-							Request.find({"receiver": receiverID, "type": "group", "status": {$in : ["pending", "blocked"]}, "requestData": [groupID]}).exec(function(err, requests){
+							Request.find({"receiver": receiverID, "type": "group", "status": {$in : ["pending", "blocked"]}, "requestData": "groupID"}).exec(function(err, requests){
 								if (!err){
 									if (requests && requests.length){
 										cb("User is already invited");
