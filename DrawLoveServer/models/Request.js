@@ -19,7 +19,7 @@ var RequestSchema = Schema(
 
         type: {type: String, required: true},
         status: {type: String, default: "pending"},
-        requestDate: {type: Date, default: Date.now},
+        responseDate: {type: Date},
         requestData: [{type: String}]
     },
     {

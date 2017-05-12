@@ -91,6 +91,7 @@ var UserServices = {
 				if (currentUser._id == request.receiver){
 					if (request.status == "pending"){
 						request.status = status;
+						request.responseDate = Date.now;
 						request.save(function(err, doc){
 							if (!err && doc){
 								if (request.status == "accepted"){
