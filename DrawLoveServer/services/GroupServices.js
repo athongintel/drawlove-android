@@ -24,7 +24,7 @@ var GroupServices = {
 	},
 
 	getAllRelatedRequests: function(groupID, cb){
-		Request.find({"type": "group", "requestData": [groupID]}).exec(cb);
+		Request.find({"type": "group", "requestData": groupID}).exec(cb);
 	}
 }
 
