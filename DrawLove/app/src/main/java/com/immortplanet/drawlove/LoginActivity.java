@@ -136,14 +136,13 @@ public class LoginActivity extends Activity {
                             startActivity(iChat);
                             finish();
                         } catch (JSONException e) {
-                            SimpleDialog dialog = new SimpleDialog(LoginActivity.this, "Error", "Cannot load data from server.", new DialogInterface.OnClickListener() {
+                            new SimpleDialog(LoginActivity.this, "Error", "Cannot load data from server.", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                     finish();
                                 }
-                            });
-                            dialog.show();
+                            }).show();
                             e.printStackTrace();
                         }
                     }
@@ -165,13 +164,12 @@ public class LoginActivity extends Activity {
                             }
                         }
 
-                        SimpleDialog dialog = new SimpleDialog(LoginActivity.this, "Error", reasonMessage, new DialogInterface.OnClickListener() {
+                        new SimpleDialog(LoginActivity.this, "Error", reasonMessage, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
-                        });
-                        dialog.show();
+                        }).show();
                     }
                 });
                 request.execute();

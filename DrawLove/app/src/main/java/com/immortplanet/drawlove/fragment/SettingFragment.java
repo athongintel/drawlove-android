@@ -85,7 +85,7 @@ public class SettingFragment extends Fragment {
 
         User user = (User) DataSingleton.getDataSingleton().get("currentUser");
         if (user == null){
-            SimpleDialog dialog = new SimpleDialog(getActivity(), "Error", "Session expired. Please login again.", new DialogInterface.OnClickListener() {
+            new SimpleDialog(getActivity(), "Error", "Session expired. Please login again.", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
@@ -93,8 +93,7 @@ public class SettingFragment extends Fragment {
                     startActivity(iLogin);
                     getActivity().finish();
                 }
-            });
-            dialog.show();
+            }).show();
         }
         else{
             updateUI(user);

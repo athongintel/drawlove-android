@@ -1,15 +1,10 @@
 package com.immortplanet.drawlove.model;
 
-import com.immortplanet.drawlove.util.NodeDateTime;
+import com.immortplanet.drawlove.util.AppDateTime;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by tom on 5/3/17.
@@ -36,7 +31,7 @@ public class Request extends DataModel{
             for (int i=0; i<data.length(); i++){
                 requestData[i] = data.getString(i);
             }
-            responseDate = jsonObject.getString("responseDate");
+            responseDate = AppDateTime.parseJSDate(jsonObject.getString("responseDate"));
         }
         catch(JSONException e){
             e.printStackTrace();

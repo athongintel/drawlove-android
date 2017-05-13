@@ -3,10 +3,12 @@ package com.immortplanet.drawlove;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.GravityCompat;
 
 import android.support.v4.widget.DrawerLayout;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.immortplanet.drawlove.fragment.AboutFragment;
 import com.immortplanet.drawlove.fragment.ChatGroupFragment;
@@ -19,6 +21,8 @@ public class ChatActivity extends Activity
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
     DrawerLayout drawer;
+
+    boolean backPressedOnce = false;
 
 
     @Override
@@ -43,7 +47,19 @@ public class ChatActivity extends Activity
             drawer.closeDrawer(GravityCompat.START);
         }
         else{
-            super.onBackPressed();
+            if (backPressedOnce) {
+                super.onBackPressed();
+            }
+            else{
+                backPressedOnce = true;
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        backPressedOnce = false;
+                    }
+                }, 2000);
+                Toast.makeText(ChatActivity.this, "Press back again to exit", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -85,15 +85,14 @@ public class FriendSearchFragment extends Fragment {
                                 User u = new User((JSONObject)arUsers.get(i));
                                 arList.add(u);
                             }
-                            liUser.setAdapter(new UserAdapter(getActivity(), R.layout.friend_search_user, arList));
+                            liUser.setAdapter(new UserAdapter(getActivity(), R.layout.user_fragment, arList));
                         } catch (JSONException e) {
-                            SimpleDialog dialog = new SimpleDialog(getActivity(), "Error", "Data error.", new DialogInterface.OnClickListener() {
+                            new SimpleDialog(getActivity(), "Error", "Data error.", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                 }
-                            });
-                            dialog.show();
+                            }).show();
                             e.printStackTrace();
                         }
                     }
@@ -141,11 +140,11 @@ public class FriendSearchFragment extends Fragment {
             View userView = null;
             //-- populate a view with data then return
             final User u = arrayList.get(position);
-            userView = inflater.inflate(R.layout.friend_search_user, null);
+            userView = inflater.inflate(R.layout.user_fragment, null);
             TextView txtChatID = (TextView)userView.findViewById(R.id.txtChatID);
             TextView txtJoinedDate = (TextView)userView.findViewById(R.id.txtJoinedDate);
             final TextView txtStatus = (TextView)userView.findViewById(R.id.txtStatus);
-            final ImageButton btAction = (ImageButton)userView.findViewById((R.id.btAction));
+            final ImageView btAction = (ImageView)userView.findViewById((R.id.btAction));
             btAction.setVisibility(View.GONE);
             final User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
             if (currentUser._id.equals(u._id)){
@@ -198,13 +197,12 @@ public class FriendSearchFragment extends Fragment {
                                 catch(JSONException e){
                                     e.printStackTrace();
                                 }
-                                SimpleDialog dialog = new SimpleDialog(getActivity(), "Error", message, new DialogInterface.OnClickListener() {
+                                new SimpleDialog(getActivity(), "Error", message, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();
                                     }
-                                });
-                                dialog.show();
+                                }).show();
                             }
                         });
                         request.execute();

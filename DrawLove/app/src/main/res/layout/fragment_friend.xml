@@ -13,49 +13,58 @@
         <FrameLayout
             android:id="@+id/friend_frame"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="1">
 
         </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/btFriend"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@color/colorTabNotSelected"
-                android:src="@drawable/fr_1" />
+                android:background="@color/colorTabSelected"
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_reader" />
 
             <ImageButton
                 android:id="@+id/btRequest"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/colorTabNotSelected"
-                android:src="@drawable/fr_3" />
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_users" />
 
             <ImageButton
                 android:id="@+id/btNotification"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/colorTabNotSelected"
-                android:src="@drawable/fr_2" />
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_mailing_1" />
 
             <ImageButton
                 android:id="@+id/btSearch"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/colorTabNotSelected"
-                android:src="@drawable/fr_0" />
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_search_engine" />
 
         </LinearLayout>
+
     </LinearLayout>
 
 </FrameLayout>

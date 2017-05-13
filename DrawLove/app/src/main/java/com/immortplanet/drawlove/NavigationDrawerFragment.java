@@ -62,7 +62,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     public NavigationDrawerFragment() {
         menu = new String[]{
-                "Groups",
+                "Chat",
                 "Friends",
                 "Settings",
                 "About"

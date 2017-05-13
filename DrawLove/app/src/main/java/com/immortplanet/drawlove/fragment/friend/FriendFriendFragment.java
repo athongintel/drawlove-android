@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -42,7 +42,7 @@ public class FriendFriendFragment extends Fragment {
             txtInfo.setText("You don't have any friend for the moment.");
             txtInfo.setVisibility(View.VISIBLE);
         }
-        liUser.setAdapter(new FriendFriendFragment.FriendAdapter(getActivity(), R.layout.friend_search_user, currentUser.friends));
+        liUser.setAdapter(new FriendFriendFragment.FriendAdapter(getActivity(), R.layout.user_fragment, currentUser.friends));
         return thisView;
     }
 
@@ -79,10 +79,10 @@ public class FriendFriendFragment extends Fragment {
             TextView txtChatID = (TextView)userView.findViewById(R.id.txtChatID);
             TextView txtJoinedDate = (TextView)userView.findViewById(R.id.txtJoinedDate);
             final TextView txtStatus = (TextView)userView.findViewById(R.id.txtStatus);
-            final ImageButton btAction = (ImageButton)userView.findViewById((R.id.btAction));
+            final ImageView btAction = (ImageView) userView.findViewById((R.id.btAction));
             btAction.setVisibility(View.GONE);
             txtStatus.setVisibility(View.GONE);
-            txtJoinedDate.setText(u.joinedDate);
+            txtJoinedDate.setText("joined on " + u.joinedDate);
             txtChatID.setText(u.chatID);
             return userView;
         }

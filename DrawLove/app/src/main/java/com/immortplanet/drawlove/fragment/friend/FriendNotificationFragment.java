@@ -5,15 +5,11 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -26,7 +22,7 @@ import com.immortplanet.drawlove.model.User;
 import com.immortplanet.drawlove.util.ConfirmDialog;
 import com.immortplanet.drawlove.util.HttpCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
-import com.immortplanet.drawlove.util.NodeDateTime;
+import com.immortplanet.drawlove.util.AppDateTime;
 import com.immortplanet.drawlove.util.SimpleDialog;
 
 import org.json.JSONException;
@@ -110,7 +106,7 @@ public class FriendNotificationFragment extends Fragment {
             }
 
             if (request.status.equals("pending")){
-                txtDate.setText(NodeDateTime.getDateFromID(request._id));
+                txtDate.setText(AppDateTime.getDateFromID(request._id));
                 txtStatus.setVisibility(View.GONE);
                 List<String> arActions = new ArrayList<String>();
                 arActions.add("Select an action");
@@ -181,13 +177,12 @@ public class FriendNotificationFragment extends Fragment {
                                         public void finished(JSONObject jsonObject) {
                                             selectedResponse = "";
                                             spAction.setSelection(0);
-                                            SimpleDialog errDialog = new SimpleDialog(getActivity(), "Error", "Cannot update request status", new DialogInterface.OnClickListener() {
+                                            new SimpleDialog(getActivity(), "Error", "Cannot update request status", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     dialog.dismiss();
                                                 }
-                                            });
-                                            errDialog.show();
+                                            }).show();
                                         }
                                     });
                                     httpRequest.execute();

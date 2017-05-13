@@ -84,6 +84,23 @@ var UserServices = {
 		}
 	},
 
+	cancelRequest: function(){
+		Request.findById(requestID, function(err, request){
+			if (!err && request){
+				if (request.sender == req.sesssion['currentUser']._id && request.status == "pending"){
+					//-- remove this request
+					Request.findByIdAndRemove(requestID, cb);
+				}
+				else{
+					cb('request_processed');
+				}
+			}
+			else{
+				cb(err, null);
+			}
+		});
+	},
+
 	answerRequest: function(currentUser, requestID, status, cb){
 		//-- check if currentUser is request's receiver
 		Request.findById(requestID, function(err, request){

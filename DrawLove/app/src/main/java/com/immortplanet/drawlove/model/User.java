@@ -1,14 +1,11 @@
 package com.immortplanet.drawlove.model;
 
-import com.immortplanet.drawlove.util.NodeDateTime;
+import com.immortplanet.drawlove.util.AppDateTime;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 
 /**
@@ -31,7 +28,7 @@ public class User extends DataModel {
             _id = jsonObject.getString("_id");
             chatID = jsonObject.getString("chatID");
             email = jsonObject.getString("email");
-            joinedDate = NodeDateTime.getDateFromID(_id);
+            joinedDate = AppDateTime.getDateFromID(_id);
         }
         catch(JSONException e){
             e.printStackTrace();

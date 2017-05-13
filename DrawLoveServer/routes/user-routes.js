@@ -1,5 +1,6 @@
 var express = require('express');
 var UserServices = require('../services/UserServices.js');
+var GroupServices = require('../services/GroupServices.js');
 
 var router = express.Router();
 
@@ -37,6 +38,24 @@ router.route('/search')
 		});
 	});
 
+router.route('leave_group')
+	.post(function(req, res){
+		var groupID = req.body['groupID'];
+		if (groupID){
+			GroupServices.removeMember(req.session['currentUser']._id, groupID, function(err, group){
+				if (!err && group){
+					res.status(200).json({});
+				}
+				else{
+					res.status(500).json({});
+				}
+			});
+		}
+		else{
+			res.status(400).json({});
+		}
+	});
+
 router.route('/request/friend')
 	.post(function(req, res){
 		//-- add new friend request
@@ -53,6 +72,25 @@ router.route('/request/friend')
 		}
 		else{
 			res.status(400).json({});
+		}
+	});
+
+
+router.route('/request/cancel')
+	.post(function(req, res){
+		var requestID = req.body['requestID'];
+		if (!requestID){
+			res.status(400).json({});
+		}
+		else{
+			UserServices.cancelRequest(req.session['currentUser']._id, requestID, function(err, request){
+				if (!err && request){
+					res.status(200).json({});
+				}
+				else{
+					res.status(400).json({"reason" : err});
+				}
+			});
 		}
 	});
 

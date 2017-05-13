@@ -197,13 +197,12 @@ public class ChatGroupFragment extends Fragment {
                                             catch (JSONException e){
                                                 e.printStackTrace();
                                             }
-                                            SimpleDialog simpleDialog = new SimpleDialog(_context, "Error", reasonMessage, new DialogInterface.OnClickListener() {
+                                            new SimpleDialog(_context, "Error", reasonMessage, new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     dialog.dismiss();
                                                 }
-                                            });
-                                            simpleDialog.show();
+                                            }).show();
                                         }
                                     });
                                     request.execute();

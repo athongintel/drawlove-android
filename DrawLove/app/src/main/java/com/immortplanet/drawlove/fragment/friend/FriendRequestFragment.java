@@ -3,12 +3,15 @@ package com.immortplanet.drawlove.fragment.friend;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -16,9 +19,18 @@ import com.immortplanet.drawlove.R;
 import com.immortplanet.drawlove.model.DataSingleton;
 import com.immortplanet.drawlove.model.Request;
 import com.immortplanet.drawlove.model.User;
-import com.immortplanet.drawlove.util.NodeDateTime;
+import com.immortplanet.drawlove.util.AppDateTime;
+import com.immortplanet.drawlove.util.ConfirmDialog;
+import com.immortplanet.drawlove.util.HttpCallback;
+import com.immortplanet.drawlove.util.HttpRequest;
+import com.immortplanet.drawlove.util.SimpleDialog;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+
 /**
  * Created by tom on 5/2/17.
  */
@@ -81,7 +93,7 @@ public class FriendRequestFragment extends Fragment {
             TextView txtSenderReceiver = (TextView)userView.findViewById(R.id.txtSenderReceiver);
             TextView txtDate = (TextView)userView.findViewById(R.id.txtDate);
             final TextView txtStatus = (TextView)userView.findViewById(R.id.txtStatus);
-            final Button btAction = (Button) userView.findViewById((R.id.btAction));
+            final ImageView btAction = (ImageView) userView.findViewById((R.id.btAction));
             btAction.setVisibility(View.GONE);
 
             if (request.type.equals("friend")){
@@ -93,13 +105,80 @@ public class FriendRequestFragment extends Fragment {
 
             if (request.status.equals("pending")){
                 txtStatus.setText("Waiting for response");
-                txtDate.setText(NodeDateTime.getDateFromID(request._id));
-                btAction.setText("Cancel");
+                txtDate.setText(AppDateTime.getDateFromID(request._id));
                 btAction.setVisibility(View.VISIBLE);
                 btAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //-- TODO: add cancel action
+
+                        final Runnable removeRequest = new Runnable() {
+                            @Override
+                            public void run() {
+                                User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
+                                Iterator<Request> it = currentUser.sentRequests.iterator();
+                                while (it.hasNext()){
+                                    Request re = it.next();
+                                    if (re._id.equals(request._id)){
+                                        it.remove();
+                                        break;
+                                    }
+                                }
+                            }
+                        };
+
+                        new ConfirmDialog(getActivity(), "Do you want to cancel this request?", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                JSONObject jsonObject = new JSONObject();
+                                try {
+                                    jsonObject.put("requestID", request._id);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                HttpRequest httpRequest = new HttpRequest("POST", "/user/request/cancel", jsonObject, new HttpCallback() {
+                                    @Override
+                                    public void finished(JSONObject jsonObject) {
+                                        removeRequest.run();
+                                    }
+                                }, new HttpCallback() {
+                                    @Override
+                                    public void finished(JSONObject jsonObject) {
+                                        String reason = "unknown";
+                                        if (jsonObject != null) {
+                                            try {
+                                                reason = jsonObject.getString("reason");
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+
+                                        if (reason.equals("request_processed")) {
+                                            new SimpleDialog(getActivity(), "Error", "This request is no more available.", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    removeRequest.run();
+                                                    dialog.dismiss();
+                                                }
+                                            }).show();
+                                        }
+                                        else{
+                                            new SimpleDialog(getActivity(), "Error", "Error occurred. Please retry later.", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            }).show();
+                                        }
+                                    }
+                                });
+                                httpRequest.execute();
+                            }
+                        }, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
                     }
                 });
             }

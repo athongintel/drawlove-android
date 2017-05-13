@@ -1,6 +1,6 @@
 package com.immortplanet.drawlove.model;
 
-import com.immortplanet.drawlove.util.NodeDateTime;
+import com.immortplanet.drawlove.util.AppDateTime;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,7 +27,7 @@ public class Message extends DataModel {
             content = jsonObject.getString("content");
             sender = jsonObject.getString("sender");
             group = jsonObject.getString("group");
-            sentDate = NodeDateTime.getDateFromID("_id");
+            sentDate = AppDateTime.getDateFromID("_id");
         }
         catch (JSONException e){
             e.printStackTrace();

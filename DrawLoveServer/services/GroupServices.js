@@ -19,6 +19,24 @@ var GroupServices = {
 		group.save(cb);
 	},
 
+	removeMember: function(userID, groupID, cb){
+		Group.findById(groupID, function(err, group){
+			if (!err && group){
+				var index = group.members.indexOf(userID);
+				if (index >= 0){
+					group.members.splice(index, 1);
+					group.save(cb);
+				}
+				else{
+					cb("User not in group");
+				}
+			}
+			else{
+				cb(err, null);
+			}
+		});
+	},
+
 	getLatestMessages: function(groupID, count, cb){
 		Message.find({'group': groupID}).sort({sentDate: 'desc'}).limit(count).exec(cb);
 	},

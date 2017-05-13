@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
@@ -14,10 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +36,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * Created by tom on 5/10/17.
@@ -91,7 +88,7 @@ public class ChatgroupFriendFragment extends Fragment{
                                 listUsers.add(allUsers.get(userID));
                             }
 
-                            arJoined = new JoinedUser(getActivity(), R.layout.friend_search_user, listUsers);
+                            arJoined = new JoinedUser(getActivity(), R.layout.user_fragment, listUsers);
                             liUser.setAdapter(arJoined);
                             if (listUsers.size() > 0) {
                                 txtInfo.setVisibility(View.GONE);
@@ -111,12 +108,12 @@ public class ChatgroupFriendFragment extends Fragment{
                                     listUsersNotyet.add(u);
                                 }
                             }
-                            arNotyet = new NotJoinedUser(getActivity(), R.layout.friend_search_user, listUsersNotyet);
+                            arNotyet = new NotJoinedUser(getActivity(), R.layout.user_fragment, listUsersNotyet);
                             liUser.setAdapter(arNotyet);
                             if (listUsersNotyet.size() > 0) {
                                 txtInfo.setVisibility(View.GONE);
                             } else {
-                                txtInfo.setText("All your friends has joined. Enjoy!");
+                                txtInfo.setText("All your friends have joined. Enjoy!");
                                 txtInfo.setVisibility(View.VISIBLE);
                             }
                             break;
@@ -164,7 +161,7 @@ public class ChatgroupFriendFragment extends Fragment{
                                     e.printStackTrace();
                                 }
                             }
-                            txtInfo.setText("Error occurred. Retry later: " + reasonMessage);
+                            txtInfo.setText("Error occurred. Retry later.");
                             txtInfo.setVisibility(View.VISIBLE);
                         }
                     });
@@ -204,7 +201,7 @@ public class ChatgroupFriendFragment extends Fragment{
             TextView txtChatID = (TextView) thisView.findViewById(R.id.txtChatID);
             TextView txtJoinedDate = (TextView) thisView.findViewById(R.id.txtJoinedDate);
             TextView txtStatus = (TextView) thisView.findViewById(R.id.txtStatus);
-            ImageButton btAction = (ImageButton) thisView.findViewById(R.id.btAction);
+            ImageView btAction = (ImageView) thisView.findViewById(R.id.btAction);
 
             txtChatID.setText(u.chatID);
 //          TODO:  txtStatus.setText("current_status");
@@ -214,7 +211,7 @@ public class ChatgroupFriendFragment extends Fragment{
             String joinedDate = "creator";
             for (Request r : chatGroup.requests){
                 if (r.receiver.equals(u._id) && r.status.equals("accepted")){
-                    joinedDate = r.responseDate;
+                    joinedDate = "joined on " + r.responseDate;
                     break;
                 }
             }
@@ -315,13 +312,12 @@ public class ChatgroupFriendFragment extends Fragment{
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                                SimpleDialog dialog = new SimpleDialog(getActivity(), "Error", reasonMessage, new DialogInterface.OnClickListener() {
+                                new SimpleDialog(getActivity(), "Error", reasonMessage, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();
                                     }
-                                });
-                                dialog.show();
+                                }).show();
                             }
                         });
                         request.execute();
