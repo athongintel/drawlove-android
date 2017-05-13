@@ -195,13 +195,23 @@ public class FriendNotificationFragment extends Fragment {
                                     spAction.setSelection(0);
                                 }
                             });
+                            dialog.setCanceledOnTouchOutside(true);
+                            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialog) {
+                                    dialog.dismiss();
+                                    selectedResponse = "";
+                                    spAction.setSelection(0);
+                                }
+                            });
                             dialog.show();
                         }
                     }
 
                     @Override
                     public void onNothingSelected(AdapterView<?> parent) {
-
+                        selectedResponse = "";
+                        spAction.setSelection(0);
                     }
                 });
                 spAction.setVisibility(View.VISIBLE);

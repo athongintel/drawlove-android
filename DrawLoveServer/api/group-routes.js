@@ -43,7 +43,6 @@ router.route('/chat')
 			//-- check if group exits and the user belong to the group
 			GroupServices.getGroupById(groupID, function(err, group){
 				if (!err && group){
-					console.log(group);
 					if (group.members.indexOf(req.session["currentUser"]._id) >= 0){
 						//-- get latest count messages
 						var result = {};

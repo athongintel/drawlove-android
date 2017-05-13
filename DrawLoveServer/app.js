@@ -4,9 +4,10 @@ var assert = require('assert');
 var session = require('express-session');
 var bodyParser  = require('body-parser');
 var http = require('http');
+var path = require('path');
+var sass = require('node-sass-middleware');
 
 var config = require('./config.js');
-
 var app = express();
 
 //-- connect to database
@@ -28,11 +29,22 @@ app.use(session({
 	saveUninitialized: false,
 	resave: true
 }));
+app.set('views', path.join(__dirname, 'www', 'app', 'views'));
+app.set('view engine', 'pug');
+app.use(
+	sass({
+        src: path.join(__dirname, 'www', 'app', 'assets', 'scss'),
+        dest: path.join(__dirname, 'wwww', 'public', 'css'),
+        prefix: '/assets/css'
+    })
+);
+app.use('/', express.static(path.join(__dirname, 'www', 'public')));
 
 //-- routing
-app.use('/', require('./routes/main-routes.js'));
-app.use('/user', require('./routes/user-routes.js'));
-app.use('/group', require('./routes/group-routes.js'));
+app.use('/', require('./routes/web-routes.js'));
+app.use('/api', require('./api/main-routes.js'));
+app.use('/api/user', require('./api/user-routes.js'));
+app.use('/api/group', require('./api/group-routes.js'));
 
 var httpServer = http.createServer(app);
 httpServer.listen(config.port);

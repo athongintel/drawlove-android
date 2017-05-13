@@ -84,10 +84,10 @@ var UserServices = {
 		}
 	},
 
-	cancelRequest: function(){
+	cancelRequest: function(userID, requestID, cb){
 		Request.findById(requestID, function(err, request){
 			if (!err && request){
-				if (request.sender == req.sesssion['currentUser']._id && request.status == "pending"){
+				if (request.sender == userID && request.status == "pending"){
 					//-- remove this request
 					Request.findByIdAndRemove(requestID, cb);
 				}

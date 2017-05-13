@@ -17,6 +17,14 @@ public class ConfirmDialog {
                 .setNegativeButton("No", cancelListener).create();
     }
 
+    public void setCanceledOnTouchOutside(boolean cancel){
+        dialog.setCanceledOnTouchOutside(cancel);
+    }
+
+    public void setOnCancelListener(DialogInterface.OnCancelListener onCancelListener){
+        dialog.setOnCancelListener(onCancelListener);
+    }
+
     public void show(){
         dialog.show();
     }

@@ -27,8 +27,8 @@
 
         <TextView
             android:id="@+id/txtDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_weight="4"
             android:gravity="center"
@@ -39,8 +39,8 @@
 
         <TextView
             android:id="@+id/txtStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_weight="4"
             android:gravity="center"
@@ -51,11 +51,12 @@
 
         <ImageView
             android:id="@+id/btAction"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="5dp"
-            app:srcCompat="@drawable/ic_error" />
+            android:scaleType="fitEnd"
+            android:src="@drawable/ic_error" />
 
     </LinearLayout>
 

@@ -39,6 +39,8 @@ public class FriendRequestFragment extends Fragment {
 
     View thisView;
     TextView txtInfo;
+    ListView liRequest;
+    RequestAdapter adapter;
 
     public FriendRequestFragment(){
 
@@ -47,16 +49,23 @@ public class FriendRequestFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         thisView = inflater.inflate(R.layout.friend_list_view_fragment, null);
-        ListView liRequest = (ListView)thisView.findViewById(R.id.liFriends);
+        liRequest = (ListView)thisView.findViewById(R.id.liFriends);
         txtInfo = (TextView)thisView.findViewById(R.id.txtInfo);
         txtInfo.setVisibility(View.GONE);
+
+        User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
+        adapter = new FriendRequestFragment.RequestAdapter(getActivity(), R.layout.request_fragment, currentUser.sentRequests);
+        liRequest.setAdapter(adapter);
+        updateUI();
+        return thisView;
+    }
+
+    void updateUI(){
         User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
         if (currentUser.sentRequests.isEmpty()){
             txtInfo.setText("Nothing to show here.");
             txtInfo.setVisibility(View.VISIBLE);
         }
-        liRequest.setAdapter(new FriendRequestFragment.RequestAdapter(getActivity(), R.layout.request_fragment, currentUser.sentRequests));
-        return thisView;
     }
 
     class RequestAdapter extends ArrayAdapter<Request> {
@@ -104,7 +113,7 @@ public class FriendRequestFragment extends Fragment {
             }
 
             if (request.status.equals("pending")){
-                txtStatus.setText("Waiting for response");
+                txtStatus.setText("Pending");
                 txtDate.setText(AppDateTime.getDateFromID(request._id));
                 btAction.setVisibility(View.VISIBLE);
                 btAction.setOnClickListener(new View.OnClickListener() {
@@ -123,6 +132,7 @@ public class FriendRequestFragment extends Fragment {
                                         break;
                                     }
                                 }
+                                updateUI();
                             }
                         };
 

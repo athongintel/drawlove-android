@@ -244,7 +244,7 @@ public class ChatgroupFriendFragment extends Fragment{
             TextView txtChatID = (TextView) thisView.findViewById(R.id.txtChatID);
             final TextView txtJoinedDate = (TextView) thisView.findViewById(R.id.txtJoinedDate);
             final TextView txtStatus = (TextView) thisView.findViewById(R.id.txtStatus);
-            final ImageButton btAction = (ImageButton) thisView.findViewById(R.id.btAction);
+            final ImageView btAction = (ImageView) thisView.findViewById(R.id.btAction);
             btAction.setVisibility(View.GONE);
 
             txtChatID.setText(u.chatID);

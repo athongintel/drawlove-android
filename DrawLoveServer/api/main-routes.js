@@ -106,9 +106,7 @@ router.route('/register')
 		var chatID = String(req.body['chatID']);
 		var password = String(req.body['password']);
 		var email = String(req.body['email']);
-		console.log(req.body, chatID, password, email);
 		UserServices.createNewUser(chatID, password, email, function(err, doc){
-			console.log("save user returned");
 			if (err || !doc){
 				res.status(500).json({reasonMessage: err.toString()})
 			}
@@ -121,7 +119,6 @@ router.route('/register')
 router.route('/checkChatID')
 	.post(function(req, res){
 		var chatID = String(req.body['chatID']);
-		console.log("/checkChatID called: " + chatID);
 		UserServices.checkChatID(chatID, function(err){
 			if (err){
 				res.status(500).json({reasonMessage: err});

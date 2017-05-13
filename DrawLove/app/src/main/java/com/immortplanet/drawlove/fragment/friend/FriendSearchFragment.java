@@ -6,9 +6,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,7 +41,6 @@ import java.util.ArrayList;
 public class FriendSearchFragment extends Fragment {
 
     View thisView;
-    Button btSearch;
     ListView liUser;
     EditText txtSearch;
     ProgressBar prLoading;
@@ -47,10 +49,60 @@ public class FriendSearchFragment extends Fragment {
     public FriendSearchFragment(){
     }
 
+    private void search(){
+        InputMethodManager in = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        in.hideSoftInputFromWindow(txtSearch.getWindowToken(), 0);
+        txtSearch.clearFocus();
+
+        prLoading.setVisibility(View.VISIBLE);
+        txtInfo.setVisibility(View.GONE);
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("search", txtSearch.getText().toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        HttpRequest request = new HttpRequest("POST", "/user/search", jsonObject, new HttpCallback() {
+            @Override
+            public void finished(JSONObject jsonObject) {
+                prLoading.setVisibility(View.GONE);
+                try {
+                    JSONArray arUsers = (JSONArray)(jsonObject.getJSONArray("users"));
+                    if (arUsers.length()==0){
+                        txtInfo.setText("No result found");
+                        txtInfo.setVisibility(View.VISIBLE);
+                    }
+                    ArrayList<User> arList = new ArrayList<User>();
+                    for (int i=0; i<arUsers.length(); i++){
+                        User u = new User((JSONObject)arUsers.get(i));
+                        arList.add(u);
+                    }
+                    liUser.setAdapter(new UserAdapter(getActivity(), R.layout.user_fragment, arList));
+                } catch (JSONException e) {
+                    new SimpleDialog(getActivity(), "Error", "Data error.", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+                    e.printStackTrace();
+                }
+            }
+        }, new HttpCallback() {
+            @Override
+            public void finished(JSONObject jsonObject) {
+                prLoading.setVisibility(View.GONE);
+                txtInfo.setText("Some errors occurred. Please retry later.");
+                txtInfo.setVisibility(View.VISIBLE);
+            }
+        });
+        request.execute();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         thisView = inflater.inflate(R.layout.friend_search_fragment, null);
-        btSearch = (Button)thisView.findViewById(R.id.btSearch);
         liUser = (ListView)thisView.findViewById(R.id.listView);
         txtSearch = (EditText)thisView.findViewById(R.id.txtSearch);
         prLoading = (ProgressBar)thisView.findViewById(R.id.prLoading);
@@ -58,55 +110,17 @@ public class FriendSearchFragment extends Fragment {
         prLoading.setVisibility(View.GONE);
         txtInfo.setVisibility(View.GONE);
 
-        btSearch.setOnClickListener(new View.OnClickListener() {
+        txtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public void onClick(View v) {
-                prLoading.setVisibility(View.VISIBLE);
-                txtInfo.setVisibility(View.GONE);
-
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.put("search", txtSearch.getText().toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    search();
+                    return true;
                 }
-                HttpRequest request = new HttpRequest("POST", "/user/search", jsonObject, new HttpCallback() {
-                    @Override
-                    public void finished(JSONObject jsonObject) {
-                        prLoading.setVisibility(View.GONE);
-                        try {
-                            JSONArray arUsers = (JSONArray)(jsonObject.getJSONArray("users"));
-                            if (arUsers.length()==0){
-                                txtInfo.setText("No result found");
-                                txtInfo.setVisibility(View.VISIBLE);
-                            }
-                            ArrayList<User> arList = new ArrayList<User>();
-                            for (int i=0; i<arUsers.length(); i++){
-                                User u = new User((JSONObject)arUsers.get(i));
-                                arList.add(u);
-                            }
-                            liUser.setAdapter(new UserAdapter(getActivity(), R.layout.user_fragment, arList));
-                        } catch (JSONException e) {
-                            new SimpleDialog(getActivity(), "Error", "Data error.", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            }).show();
-                            e.printStackTrace();
-                        }
-                    }
-                }, new HttpCallback() {
-                    @Override
-                    public void finished(JSONObject jsonObject) {
-                        prLoading.setVisibility(View.GONE);
-                        txtInfo.setText("Some errors occurred. Please retry later.");
-                        txtInfo.setVisibility(View.VISIBLE);
-                    }
-                });
-                request.execute();
+                return false;
             }
         });
+
         return thisView;
     }
 
