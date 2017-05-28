@@ -20,8 +20,8 @@ import com.immortplanet.drawlove.ChatGroupActivity;
 import com.immortplanet.drawlove.model.DataSingleton;
 import com.immortplanet.drawlove.model.Group;
 import com.immortplanet.drawlove.model.User;
-import com.immortplanet.drawlove.util.CallbackWithData;
-import com.immortplanet.drawlove.util.HttpCallback;
+import com.immortplanet.drawlove.util.ObjectCallback;
+import com.immortplanet.drawlove.util.JsonCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
 import com.immortplanet.drawlove.R;
 import com.immortplanet.drawlove.util.InputDialog;
@@ -32,7 +32,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 /**
@@ -42,6 +41,9 @@ public class ChatGroupFragment extends Fragment {
 
     View thisView;
     GroupAdapter adapter;
+    GridView gvGroups;
+    ProgressBar prLoading;
+    TextView txtLoadingInfo;
 
 
     public ChatGroupFragment() {
@@ -52,19 +54,22 @@ public class ChatGroupFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         thisView = inflater.inflate(R.layout.fragment_chat_group, container, false);
-        final GridView gvGroups = (GridView) (thisView.findViewById(R.id.gvGroups));
-        final ProgressBar prLoading = (ProgressBar) (thisView.findViewById(R.id.prLoading));
-        final TextView txtLoadingInfo = (TextView) (thisView.findViewById(R.id.txtLoadingInfo));
+        gvGroups = (GridView) (thisView.findViewById(R.id.gvGroups));
+        prLoading = (ProgressBar) (thisView.findViewById(R.id.prLoading));
+        txtLoadingInfo = (TextView) (thisView.findViewById(R.id.txtLoadingInfo));
 
         prLoading.setVisibility(View.VISIBLE);
         txtLoadingInfo.setText("Loading groups...");
 
+        return thisView;
+    }
+
+    private void reloadGroups(){
         final User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
 
-        final ArrayList<Group> arList = new ArrayList<>();
         if (currentUser.groups == null) {
-            currentUser.groups = new HashMap<>();
-            HttpRequest request = new HttpRequest("GET", "/group", null, new HttpCallback() {
+            currentUser.groups = new ArrayList<>();
+            HttpRequest request = new HttpRequest("GET", "/group", null, new JsonCallback() {
                 @Override
                 public void finished(JSONObject jsonObject) {
                     //-- populate ListView with items
@@ -73,18 +78,17 @@ public class ChatGroupFragment extends Fragment {
                         groups = (JSONArray) (jsonObject.getJSONArray("groups"));
                         for (int i = 0; i < groups.length(); i++) {
                             Group g = new Group((JSONObject) groups.get(i));
-                            arList.add(g);
-                            currentUser.groups.put(g._id, g);
+                            currentUser.groups.add(g);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     prLoading.setVisibility(View.GONE);
                     txtLoadingInfo.setVisibility(View.GONE);
-                    adapter = new GroupAdapter(getActivity(), 0, arList);
+                    adapter = new GroupAdapter(getActivity(), 0, currentUser.groups);
                     gvGroups.setAdapter(adapter);
                 }
-            }, new HttpCallback() {
+            }, new JsonCallback() {
                 @Override
                 public void finished(JSONObject jsonObject) {
                     prLoading.setVisibility(View.GONE);
@@ -93,15 +97,17 @@ public class ChatGroupFragment extends Fragment {
             });
             request.execute();
         } else {
-            for (Group g : currentUser.groups.values()) {
-                arList.add(g);
-            }
             prLoading.setVisibility(View.GONE);
             txtLoadingInfo.setVisibility(View.GONE);
-            adapter = new GroupAdapter(getActivity(), 0, arList);
+            adapter = new GroupAdapter(getActivity(), 0, currentUser.groups);
             gvGroups.setAdapter(adapter);
         }
-        return thisView;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        reloadGroups();
     }
 
     private class GroupAdapter extends ArrayAdapter<Group>{
@@ -167,7 +173,7 @@ public class ChatGroupFragment extends Fragment {
                     onClickListener = new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            InputDialog inputDialog = new InputDialog(_context, "Create new group", "Group name", new CallbackWithData() {
+                            InputDialog inputDialog = new InputDialog(_context, "Create new group", "Group name", new ObjectCallback() {
                                 @Override
                                 public void callback(Object data) {
                                     //-- http request to create group
@@ -178,16 +184,15 @@ public class ChatGroupFragment extends Fragment {
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-                                    HttpRequest request = new HttpRequest("POST", "/group", jsonObject, new HttpCallback() {
+                                    HttpRequest request = new HttpRequest("POST", "/group", jsonObject, new JsonCallback() {
                                         @Override
                                         public void finished(JSONObject jsonObject) {
                                             //-- reload
                                             Group g = new Group(jsonObject);
                                             final User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
-                                            currentUser.groups.put(g._id, g);
                                             adapter.add(g);
                                         }
-                                    }, new HttpCallback() {
+                                    }, new JsonCallback() {
                                         @Override
                                         public void finished(JSONObject jsonObject) {
                                             String reasonMessage = "Unknown";
@@ -207,7 +212,7 @@ public class ChatGroupFragment extends Fragment {
                                     });
                                     request.execute();
                                 }
-                            }, new CallbackWithData() {
+                            }, new ObjectCallback() {
                                 @Override
                                 public void callback(Object data) {
                                 }

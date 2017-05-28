@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
         }
 
         //-- set underline for txtRegister
-        TextView txtRegister = (TextView)findViewById(R.id.txtRegister);
+        TextView txtRegister = (TextView) findViewById(R.id.txtRegister);
         txtRegister.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
         //-- set action for register
         txtRegister.setOnClickListener(new View.OnClickListener() {
@@ -66,7 +66,7 @@ public class MainActivity extends Activity {
         });
 
         //-- set action for login button
-        Button btLogin = (Button)findViewById(R.id.btLogin);
+        Button btLogin = (Button) findViewById(R.id.btLogin);
         btLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

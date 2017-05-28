@@ -4,13 +4,11 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,7 +19,7 @@ import com.immortplanet.drawlove.model.Request;
 import com.immortplanet.drawlove.model.User;
 import com.immortplanet.drawlove.util.AppDateTime;
 import com.immortplanet.drawlove.util.ConfirmDialog;
-import com.immortplanet.drawlove.util.HttpCallback;
+import com.immortplanet.drawlove.util.JsonCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
 import com.immortplanet.drawlove.util.SimpleDialog;
 
@@ -145,12 +143,12 @@ public class FriendRequestFragment extends Fragment {
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                                HttpRequest httpRequest = new HttpRequest("POST", "/user/request/cancel", jsonObject, new HttpCallback() {
+                                HttpRequest httpRequest = new HttpRequest("POST", "/user/request/cancel", jsonObject, new JsonCallback() {
                                     @Override
                                     public void finished(JSONObject jsonObject) {
                                         removeRequest.run();
                                     }
-                                }, new HttpCallback() {
+                                }, new JsonCallback() {
                                     @Override
                                     public void finished(JSONObject jsonObject) {
                                         String reason = "unknown";

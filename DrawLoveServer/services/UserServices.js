@@ -111,6 +111,9 @@ var UserServices = {
 						request.responseDate = new Date();
 						request.save(function(err, doc){
 							if (!err && doc){
+								var result = {
+									"request": doc
+								}
 								if (request.status == "accepted"){
 									if (request.type == "friend"){
 										//-- add friend
@@ -124,7 +127,8 @@ var UserServices = {
 																d.friends.push(request.sender);
 																d.save(function(err, cur){
 																	if (!err && cur){
-																		cb(null, sender);
+																		result["extra"] = cur;
+																		cb(null, result);
 																	}
 																	else{
 																		cb(err, null);
@@ -151,7 +155,15 @@ var UserServices = {
 										Group.findById(groupID, function(err, group){
 											if (!err && group){
 												group.members.push(request.receiver);
-												group.save(cb);
+												group.save(function(err, cur){
+													if (!err && cur){
+														result["extra"] = cur;
+														cb(null, result);
+													}
+													else{
+														cb(err, null);
+													}
+												});
 											}
 											else{
 												cb(err || "Group not found.", null);
@@ -160,7 +172,7 @@ var UserServices = {
 									}
 								}
 								else{
-									cb(null, doc);
+									cb(null, result);
 								}
 							}
 							else{

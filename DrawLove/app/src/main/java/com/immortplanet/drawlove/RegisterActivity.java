@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
-import com.immortplanet.drawlove.util.HttpCallback;
+import com.immortplanet.drawlove.util.JsonCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
 import com.immortplanet.drawlove.util.SimpleDialog;
 
@@ -34,13 +34,13 @@ public class RegisterActivity extends Activity {
         setContentView(R.layout.activity_register);
 
         //-- get views
-        final EditText txtChatID = (EditText)findViewById(R.id.txtChatID);
-        final EditText txtPassword = (EditText)findViewById(R.id.txtPassword);
-        final EditText txtRePassword = (EditText)findViewById(R.id.txtRePassword);
-        final EditText txtEmail = (EditText)findViewById(R.id.txtEmail);
-        final ProgressBar prChatID = (ProgressBar)findViewById(R.id.prChatID);
-        final ProgressBar prRegister = (ProgressBar)findViewById(R.id.prRegister);
-        final Button btRegister = (Button)findViewById(R.id.btRegister);
+        final EditText txtChatID = (EditText) findViewById(R.id.txtChatID);
+        final EditText txtPassword = (EditText) findViewById(R.id.txtPassword);
+        final EditText txtRePassword = (EditText) findViewById(R.id.txtRePassword);
+        final EditText txtEmail = (EditText) findViewById(R.id.txtEmail);
+        final ProgressBar prChatID = (ProgressBar) findViewById(R.id.prChatID);
+        final ProgressBar prRegister = (ProgressBar) findViewById(R.id.prRegister);
+        final Button btRegister = (Button) findViewById(R.id.btRegister);
 
         //-- reset states
         validation = new boolean[3];
@@ -51,7 +51,7 @@ public class RegisterActivity extends Activity {
         btRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (validation[0] & validation[1] & validation[2]){
+                if (validation[0] & validation[1] & validation[2]) {
                     //-- call register POST
                     btRegister.setEnabled(false);
                     txtChatID.setEnabled(false);
@@ -68,7 +68,7 @@ public class RegisterActivity extends Activity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    HttpRequest request = new HttpRequest("POST", "/register", obj, new HttpCallback() {
+                    HttpRequest request = new HttpRequest("POST", "/register", obj, new JsonCallback() {
                         @Override
                         public void finished(JSONObject jsonObject) {
                             prRegister.setVisibility(View.GONE);
@@ -90,7 +90,7 @@ public class RegisterActivity extends Activity {
                             dialog.show();
 
                         }
-                    }, new HttpCallback() {
+                    }, new JsonCallback() {
                         @Override
                         public void finished(JSONObject jsonObject) {
                             prRegister.setVisibility(View.GONE);
@@ -121,8 +121,7 @@ public class RegisterActivity extends Activity {
                         }
                     });
                     request.execute();
-                }
-                else{
+                } else {
                     SimpleDialog dialog = new SimpleDialog(RegisterActivity.this, "Error", "Please check all inputs", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -135,30 +134,30 @@ public class RegisterActivity extends Activity {
         });
 
         txtRePassword.addTextChangedListener(new TextWatcher() {
-             @Override
-             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-             }
+            }
 
-             @Override
-             public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-             }
+            }
 
-             @Override
-             public void afterTextChanged(Editable s) {
-                 String pass = txtPassword.getText().toString();
-                 String rePass = txtRePassword.getText().toString();
+            @Override
+            public void afterTextChanged(Editable s) {
+                String pass = txtPassword.getText().toString();
+                String rePass = txtRePassword.getText().toString();
 
-                 if (("").equals(pass) || !rePass.equals(pass)) {
-                     txtRePassword.setError("Passwords not matched");
-                     validation[1] = false;
-                 } else {
-                     txtRePassword.setError(null);
-                     validation[1] = true;
-                 }
-             }
-         });
+                if (("").equals(pass) || !rePass.equals(pass)) {
+                    txtRePassword.setError("Passwords not matched");
+                    validation[1] = false;
+                } else {
+                    txtRePassword.setError(null);
+                    validation[1] = true;
+                }
+            }
+        });
 
 
         txtEmail.addTextChangedListener(new TextWatcher() {
@@ -174,11 +173,10 @@ public class RegisterActivity extends Activity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (!TextUtils.isEmpty(s.toString()) && Patterns.EMAIL_ADDRESS.matcher(s).matches()){
+                if (!TextUtils.isEmpty(s.toString()) && Patterns.EMAIL_ADDRESS.matcher(s).matches()) {
                     txtEmail.setError(null);
                     validation[2] = true;
-                }
-                else{
+                } else {
                     txtEmail.setError("Not a valid email");
                     validation[2] = false;
                 }
@@ -200,14 +198,14 @@ public class RegisterActivity extends Activity {
                             e.printStackTrace();
                         }
 
-                        HttpRequest request = new HttpRequest("POST", "/checkChatID", obj, new HttpCallback() {
+                        HttpRequest request = new HttpRequest("POST", "/checkChatID", obj, new JsonCallback() {
                             @Override
                             public void finished(JSONObject jsonObject) {
                                 prChatID.setVisibility(View.GONE);
                                 txtChatID.setError(null);
                                 validation[0] = true;
                             }
-                        }, new HttpCallback() {
+                        }, new JsonCallback() {
                             @Override
                             public void finished(JSONObject jsonObject) {
                                 prChatID.setVisibility(View.GONE);
@@ -216,8 +214,7 @@ public class RegisterActivity extends Activity {
                             }
                         });
                         request.execute();
-                    }
-                    else{
+                    } else {
                         txtChatID.setError("Cannot be empty");
                         validation[0] = false;
                     }

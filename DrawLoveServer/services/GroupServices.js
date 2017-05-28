@@ -25,7 +25,13 @@ var GroupServices = {
 				var index = group.members.indexOf(userID);
 				if (index >= 0){
 					group.members.splice(index, 1);
-					group.save(cb);
+					if (group.members.length == 0){
+						//-- remove group as no body left
+						Group.findByIdAndRemove(groupID, cb);
+					}
+					else{
+						group.save(cb);
+					}
 				}
 				else{
 					cb("User not in group");

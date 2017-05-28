@@ -12,19 +12,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.immortplanet.drawlove.model.DataSingleton;
-import com.immortplanet.drawlove.util.HttpCallback;
+import com.immortplanet.drawlove.util.JsonCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
 import com.immortplanet.drawlove.LoginActivity;
 import com.immortplanet.drawlove.R;
 import com.immortplanet.drawlove.util.SimpleDialog;
 import com.immortplanet.drawlove.model.User;
 
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 /**
  * A simple {@link android.app.Fragment} subclass.
@@ -64,14 +59,14 @@ public class SettingFragment extends Fragment {
         txtLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            HttpRequest request = new HttpRequest("GET", "/logout", null, new HttpCallback() {
+            HttpRequest request = new HttpRequest("GET", "/logout", null, new JsonCallback() {
                 @Override
                 public void finished(JSONObject jsonObject) {
                     Intent iLogin = new Intent(getActivity(), LoginActivity.class);
                     startActivity(iLogin);
                     getActivity().finish();
                 }
-            }, new HttpCallback() {
+            }, new JsonCallback() {
                 @Override
                 public void finished(JSONObject jsonObject) {
                     Intent iLogin = new Intent(getActivity(), LoginActivity.class);

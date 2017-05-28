@@ -20,7 +20,7 @@ import com.immortplanet.drawlove.model.Group;
 import com.immortplanet.drawlove.model.Request;
 import com.immortplanet.drawlove.model.User;
 import com.immortplanet.drawlove.util.ConfirmDialog;
-import com.immortplanet.drawlove.util.HttpCallback;
+import com.immortplanet.drawlove.util.JsonCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
 import com.immortplanet.drawlove.util.AppDateTime;
 import com.immortplanet.drawlove.util.SimpleDialog;
@@ -93,7 +93,7 @@ public class FriendNotificationFragment extends Fragment {
             final Request request = arrayList.get(position);
             userView = inflater.inflate(resourceId, null);
             TextView txtSenderReceiver = (TextView)userView.findViewById(R.id.txtSenderReceiver);
-            TextView txtDate = (TextView)userView.findViewById(R.id.txtDate);
+            final TextView txtDate = (TextView)userView.findViewById(R.id.txtDate);
             final TextView txtStatus = (TextView)userView.findViewById(R.id.txtStatus);
             final Spinner spAction = (Spinner) userView.findViewById((R.id.spAction));
             spAction.setVisibility(View.GONE);
@@ -142,7 +142,7 @@ public class FriendNotificationFragment extends Fragment {
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-                                    HttpRequest httpRequest = new HttpRequest("POST", "/user/request/action", jsonObject, new HttpCallback() {
+                                    HttpRequest httpRequest = new HttpRequest("POST", "/user/request/action", jsonObject, new JsonCallback() {
                                         @Override
                                         public void finished(JSONObject jsonObject) {
                                             //-- update request status
@@ -151,17 +151,33 @@ public class FriendNotificationFragment extends Fragment {
                                             if ("accepted".equals(selectedResponse)){
                                                 txtStatus.setText("Accepted");
                                                 User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
+                                                try {
+                                                    Request r = new Request(jsonObject.getJSONObject("request"));
+                                                    txtDate.setText(AppDateTime.parseJSDate(r.responseDate));
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
                                                 if ("friend".equals(request.type)){
                                                     //-- a new user is returned to be friend
-                                                    User u = new User(jsonObject);
+                                                    User u = null;
+                                                    try {
+                                                        u = new User(jsonObject.getJSONObject("extra"));
+                                                    } catch (JSONException e) {
+                                                        e.printStackTrace();
+                                                    }
                                                     HashMap<String, User> allUsers = (HashMap<String, User>)DataSingleton.getDataSingleton().get("allUsers");
                                                     currentUser.friends.add(u);
                                                     allUsers.put(u._id, u);
                                                 }
                                                 else if ("group".equals(request.type)){
                                                     //-- add this new group
-                                                    Group g = new Group(jsonObject);
-                                                    currentUser.groups.put(g._id, g);
+                                                    Group g = null;
+                                                    try {
+                                                        g = new Group(jsonObject.getJSONObject("extra"));
+                                                    } catch (JSONException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                    currentUser.groups.add(g);
                                                 }
                                             }
                                             else if ("blocked".equals(selectedResponse)){
@@ -172,7 +188,7 @@ public class FriendNotificationFragment extends Fragment {
                                             }
                                             txtStatus.setVisibility(View.VISIBLE);
                                         }
-                                    }, new HttpCallback() {
+                                    }, new JsonCallback() {
                                         @Override
                                         public void finished(JSONObject jsonObject) {
                                             selectedResponse = "";

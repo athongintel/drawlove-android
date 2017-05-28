@@ -14,12 +14,14 @@ import com.immortplanet.drawlove.model.DataSingleton;
 import com.immortplanet.drawlove.model.Group;
 import com.immortplanet.drawlove.model.User;
 import com.immortplanet.drawlove.util.ConfirmDialog;
-import com.immortplanet.drawlove.util.HttpCallback;
+import com.immortplanet.drawlove.util.JsonCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
 import com.immortplanet.drawlove.util.SimpleDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Iterator;
 
 /**
  * Created by tom on 5/10/17.
@@ -52,17 +54,26 @@ public class ChatgroupSettingFragment extends Fragment{
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        HttpRequest request = new HttpRequest("POST", "/user/leave_group", jsonObject, new HttpCallback() {
+                        HttpRequest request = new HttpRequest("POST", "/user/leave_group", jsonObject, new JsonCallback() {
                             @Override
                             public void finished(JSONObject jsonObject) {
                                 //-- remove this group in current user list
                                 User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
-                                currentUser.groups.remove(chatGroup._id);
+                                //-- remove by iterator
+                                Iterator<Group> it = currentUser.groups.iterator();
+                                while (it.hasNext()){
+                                    Group g = it.next();
+                                    if (g._id.equals(chatGroup._id)){
+                                        it.remove();
+                                        break;
+                                    }
+                                }
                                 getActivity().finish();
                             }
-                        }, new HttpCallback() {
+                        }, new JsonCallback() {
                             @Override
                             public void finished(JSONObject jsonObject) {
+                                System.err.print(jsonObject);
                                 new SimpleDialog(getActivity(), "Error", "Error occurred. Please retry later.", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -71,6 +82,7 @@ public class ChatgroupSettingFragment extends Fragment{
                                 }).show();
                             }
                         });
+                        request.execute();
                     }
                 }, new DialogInterface.OnClickListener() {
                     @Override

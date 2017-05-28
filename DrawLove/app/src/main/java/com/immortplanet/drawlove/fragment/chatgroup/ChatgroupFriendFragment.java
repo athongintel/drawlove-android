@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioGroup;
@@ -25,7 +24,7 @@ import com.immortplanet.drawlove.model.DataSingleton;
 import com.immortplanet.drawlove.model.Group;
 import com.immortplanet.drawlove.model.Request;
 import com.immortplanet.drawlove.model.User;
-import com.immortplanet.drawlove.util.HttpCallback;
+import com.immortplanet.drawlove.util.JsonCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
 import com.immortplanet.drawlove.util.SimpleDialog;
 
@@ -113,7 +112,7 @@ public class ChatgroupFriendFragment extends Fragment{
                             if (listUsersNotyet.size() > 0) {
                                 txtInfo.setVisibility(View.GONE);
                             } else {
-                                txtInfo.setText("All your friends have joined. Enjoy!");
+                                txtInfo.setText("All your friends had joined this group!");
                                 txtInfo.setVisibility(View.VISIBLE);
                             }
                             break;
@@ -130,7 +129,7 @@ public class ChatgroupFriendFragment extends Fragment{
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    HttpRequest request = new HttpRequest("POST", "/user/get_users", jsonObject, new HttpCallback() {
+                    HttpRequest request = new HttpRequest("POST", "/user/get_users", jsonObject, new JsonCallback() {
                         @Override
                         public void finished(JSONObject jsonObject) {
                         JSONArray arUsers = null;
@@ -150,7 +149,7 @@ public class ChatgroupFriendFragment extends Fragment{
                         }
                         runner.run();
                         }
-                    }, new HttpCallback() {
+                    }, new JsonCallback() {
                         @Override
                         public void finished(JSONObject jsonObject) {
                             String reasonMessage = "Unknown";
@@ -290,7 +289,7 @@ public class ChatgroupFriendFragment extends Fragment{
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        HttpRequest request = new HttpRequest("POST", "/user/request/add_to_group", jsonObject, new HttpCallback() {
+                        HttpRequest request = new HttpRequest("POST", "/user/request/add_to_group", jsonObject, new JsonCallback() {
                             @Override
                             public void finished(JSONObject jsonObject) {
                                 Request r = new Request(jsonObject);
@@ -303,7 +302,7 @@ public class ChatgroupFriendFragment extends Fragment{
                                 currentUser.sentRequests.add(r);
                                 Toast.makeText(getActivity(), "Request sent", Toast.LENGTH_SHORT).show();
                             }
-                        }, new HttpCallback() {
+                        }, new JsonCallback() {
                             @Override
                             public void finished(JSONObject jsonObject) {
                                 String reasonMessage = "Unknown";

@@ -2,16 +2,12 @@ package com.immortplanet.drawlove;
 
 
 import android.app.Activity;
-
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
+import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 import android.view.WindowManager;
 
 import com.immortplanet.drawlove.fragment.chatgroup.ChatgroupChatFragment;
@@ -23,8 +19,9 @@ import com.immortplanet.drawlove.model.Group;
 import com.immortplanet.drawlove.model.Message;
 import com.immortplanet.drawlove.model.Request;
 import com.immortplanet.drawlove.model.User;
-import com.immortplanet.drawlove.util.HttpCallback;
+import com.immortplanet.drawlove.util.JsonCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
+import com.immortplanet.drawlove.util.SimpleDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,7 +32,9 @@ import java.util.ArrayList;
 public class ChatGroupActivity extends Activity {
 
     private static final int MESSAGE_COUNT = 20;
-
+    String groupID;
+    String groupName;
+    Group chatGroup;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -45,11 +44,6 @@ public class ChatGroupActivity extends Activity {
      * {@link android.support.v13.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
-    String groupID;
-    String groupName;
-    Group chatGroup;
-
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -65,14 +59,22 @@ public class ChatGroupActivity extends Activity {
 
         //-- set title, bundle is required to not be null
         Bundle bundle = getIntent().getExtras();
-        groupID =  bundle.getString("groupID");
+        groupID = bundle.getString("groupID");
         groupName = bundle.getString("groupName");
         getActionBar().setTitle(groupName);
 
         //-- if this group is not loaded then load the info
         User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
-        final Group[] g = {currentUser.groups.get(groupID)};
-        if (g[0] != null){
+        //-- find the group instance
+        Group groupInstance = null;
+        for (Group g : currentUser.groups) {
+            if (g._id.equals(groupID)) {
+                groupInstance = g;
+                break;
+            }
+        }
+        final Group[] g = {groupInstance};
+        if (g[0] != null) {
             //-- request the group and latest N message
             JSONObject jsonObject = new JSONObject();
             try {
@@ -81,32 +83,39 @@ public class ChatGroupActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            HttpRequest request = new HttpRequest("POST", "/group/chat", jsonObject, new HttpCallback() {
+            HttpRequest request = new HttpRequest("POST", "/group/chat", jsonObject, new JsonCallback() {
                 @Override
                 public void finished(JSONObject jsonObject) {
                     try {
                         chatGroup = new Group(jsonObject.getJSONObject("group"));
                         chatGroup.requests = new ArrayList<>();
                         JSONArray requests = jsonObject.getJSONArray("requests");
-                        for (int i=0; i<requests.length(); i++){
+                        for (int i = 0; i < requests.length(); i++) {
                             chatGroup.requests.add(new Request(requests.getJSONObject(i)));
                         }
                         JSONArray messages = jsonObject.getJSONArray("messages");
-                        for (int i=0; i<messages.length(); i++) {
+                        for (int i = 0; i < messages.length(); i++) {
                             g[0].messages.add(new Message(messages.getJSONObject(i)));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
-            }, new HttpCallback() {
+            }, new JsonCallback() {
                 @Override
                 public void finished(JSONObject jsonObject) {
+                    String reasonMessage = "unknown";
                     try {
-                        String u = jsonObject.getString("reasonMessage");
+                        reasonMessage = jsonObject.getString("reasonMessage");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    new SimpleDialog(ChatGroupActivity.this, "Error", "Cannot load group. Reason: " + reasonMessage, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ChatGroupActivity.this.finish();
+                        }
+                    }).show();
                 }
             });
             request.execute();
@@ -133,7 +142,7 @@ public class ChatGroupActivity extends Activity {
 
         @Override
         public Fragment getItem(int position) {
-            switch (position){
+            switch (position) {
                 case 0:
                     return new ChatgroupChatFragment(chatGroup);
                 case 1:

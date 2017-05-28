@@ -13,7 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static com.immortplanet.drawlove.DrawLoveApplication.DOMAIN;
+import static com.immortplanet.drawlove.DrawLoveApplication.API_DOMAIN;
 
 /**
  * Created by tom on 4/30/17.
@@ -34,10 +34,10 @@ public class HttpRequest extends AsyncTask{
     String method;
     String route;
     JSONObject jsonObject;
-    HttpCallback onSuccess;
-    HttpCallback onError;
+    JsonCallback onSuccess;
+    JsonCallback onError;
 
-    public HttpRequest(String method, String route, JSONObject jsonObject, HttpCallback onSuccess, HttpCallback onError) {
+    public HttpRequest(String method, String route, JSONObject jsonObject, JsonCallback onSuccess, JsonCallback onError) {
         this.method = method;
         this.route = route;
         this.jsonObject = jsonObject;
@@ -49,7 +49,7 @@ public class HttpRequest extends AsyncTask{
     protected Object doInBackground(Object[] params) {
         HttpResult result = null;
         try {
-            URL url = new URL(DOMAIN + route);
+            URL url = new URL(API_DOMAIN + route);
             HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
             httpURLConnection.setDoOutput("POST".equals(method));
             httpURLConnection.setRequestMethod(method);

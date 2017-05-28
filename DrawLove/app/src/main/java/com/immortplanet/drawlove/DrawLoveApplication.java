@@ -11,12 +11,15 @@ import java.net.CookieManager;
 
 public class DrawLoveApplication extends Application {
 
-//    public static String DOMAIN = "http://drawlove.immortplanet.com/api";
-    public static String DOMAIN = "http://192.168.1.9:8083/api";
+    //    public static String DOMAIN = "http://drawlove.immortplanet.com/api";
+    public static String DOMAIN = "192.168.1.10:8083";
+    public static String HTTP_DOMAIN = "http://" + DOMAIN;
+    //    public static String DOMAIN = "http://10.0.2.2:8083";
+    public static String API_DOMAIN = HTTP_DOMAIN + "/api";
 
 
     @Override
-    public void onCreate(){
+    public void onCreate() {
         super.onCreate();
         CookieManager cookieManager = new CookieManager();
         CookieHandler.setDefault(cookieManager);

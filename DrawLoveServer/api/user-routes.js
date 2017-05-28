@@ -38,7 +38,7 @@ router.route('/search')
 		});
 	});
 
-router.route('leave_group')
+router.route('/leave_group')
 	.post(function(req, res){
 		var groupID = req.body['groupID'];
 		if (groupID){
@@ -47,6 +47,7 @@ router.route('leave_group')
 					res.status(200).json({});
 				}
 				else{
+					console.log(err);
 					res.status(500).json({});
 				}
 			});

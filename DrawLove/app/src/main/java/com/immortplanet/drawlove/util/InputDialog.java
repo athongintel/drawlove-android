@@ -22,7 +22,7 @@ public class InputDialog {
 
     AlertDialog alertDialog;
 
-    public InputDialog(Context context, String message, String hint, final CallbackWithData okCallback, final CallbackWithData cancelCallback) {
+    public InputDialog(Context context, String message, String hint, final ObjectCallback okCallback, final ObjectCallback cancelCallback) {
         this.message = message;
         LayoutInflater li = LayoutInflater.from(context);
         View thisView = li.inflate(R.layout.input_dialog, null);

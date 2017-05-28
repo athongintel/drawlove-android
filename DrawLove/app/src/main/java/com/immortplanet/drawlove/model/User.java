@@ -21,7 +21,7 @@ public class User extends DataModel {
 
     public ArrayList<Request> sentRequests;
     public ArrayList<Request> receivedRequests;
-    public HashMap<String, Group> groups;
+    public ArrayList<Group> groups;
 
     public User(JSONObject jsonObject){
         try{

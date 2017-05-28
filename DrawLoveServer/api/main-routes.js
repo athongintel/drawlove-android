@@ -1,4 +1,5 @@
 var express = require('express');
+var randomstring = require('randomstring');
 var UserServices = require('../services/UserServices.js');
 var MailServices = require('../services/MailServices.js');
 
@@ -15,10 +16,14 @@ router.route('/login')
 		var password = String(req.body['password']);
 		UserServices.authenticateUser(chatID, password, function(err, user){
 			if (!err && user){
-				req.session['currentUser'] = user;
-				UserServices.activeUsers[user._id] = user;
+				jsonUser = user.toObject();
+				var ioSocketToken = randomstring.generate(16);
+				jsonUser["ioSocketToken"] =  ioSocketToken;
+				req.session['currentUser'] = jsonUser;
+				UserServices.activeUsers[user._id] = jsonUser;
 				var result = {};
 				result["user"] = user;
+				result["ioSocketToken"] = ioSocketToken;
 				UserServices.getAllFriends(user, function(err, friends){
 					if (!err && friends){
 						result["friends"] = friends;
@@ -92,8 +97,6 @@ router.route('/logout')
 		if (user){
 			UserServices.activeUsers[user._id] = null;
 			req.session['currentUser'] = null;
-			//-- TODO: notify to this user's current active friends
-
 			res.status(200).json({});
 		}
 		else{

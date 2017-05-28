@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -24,7 +23,7 @@ import com.immortplanet.drawlove.R;
 import com.immortplanet.drawlove.model.DataSingleton;
 import com.immortplanet.drawlove.model.User;
 import com.immortplanet.drawlove.model.Request;
-import com.immortplanet.drawlove.util.HttpCallback;
+import com.immortplanet.drawlove.util.JsonCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
 import com.immortplanet.drawlove.util.SimpleDialog;
 
@@ -63,7 +62,7 @@ public class FriendSearchFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        HttpRequest request = new HttpRequest("POST", "/user/search", jsonObject, new HttpCallback() {
+        HttpRequest request = new HttpRequest("POST", "/user/search", jsonObject, new JsonCallback() {
             @Override
             public void finished(JSONObject jsonObject) {
                 prLoading.setVisibility(View.GONE);
@@ -89,7 +88,7 @@ public class FriendSearchFragment extends Fragment {
                     e.printStackTrace();
                 }
             }
-        }, new HttpCallback() {
+        }, new JsonCallback() {
             @Override
             public void finished(JSONObject jsonObject) {
                 prLoading.setVisibility(View.GONE);
@@ -192,7 +191,7 @@ public class FriendSearchFragment extends Fragment {
                         catch(JSONException e){
                             e.printStackTrace();
                         }
-                        HttpRequest request = new HttpRequest("POST", "/user/request/friend", jsonObject, new HttpCallback() {
+                        HttpRequest request = new HttpRequest("POST", "/user/request/friend", jsonObject, new JsonCallback() {
                             @Override
                             public void finished(JSONObject jsonObject) {
                                 //-- on success update view
@@ -201,7 +200,7 @@ public class FriendSearchFragment extends Fragment {
                                 Request request = new Request(jsonObject);
                                 currentUser.sentRequests.add(request);
                             }
-                        }, new HttpCallback() {
+                        }, new JsonCallback() {
                             @Override
                             public void finished(JSONObject jsonObject) {
                                 String message = "Cannot send request";

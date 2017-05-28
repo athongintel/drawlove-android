@@ -11,11 +11,11 @@
         android:id="@+id/gvGroups"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:horizontalSpacing="10dp"
         android:numColumns="3"
-        android:stretchMode="columnWidth"
         android:padding="10dp"
-        android:verticalSpacing="10dp"
-        android:horizontalSpacing="10dp"/>
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="10dp" />
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
