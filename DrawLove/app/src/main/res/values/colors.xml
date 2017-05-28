@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#303f9f</color>
     <color name="colorAccent">#ff4081</color>
     <color name="colorTabNotSelected">#c2cfd4</color>
-    <color name="colorTabSelected">#f2f4f4</color>
+    <color name="colorTabSelected">#cfcfcf</color>
     <color name="colorButton">#dddddd</color>
+    <color name="pallette">#b8b8b8</color>
 </resources>

@@ -24,10 +24,12 @@ public class SocketSubscribe {
     static class MessageHandler{
         Handler handler;
         String event;
+        int loop;
 
-        public MessageHandler(String event, Handler handler){
+        public MessageHandler(String event, Handler handler, int loop){
             this.event = event;
             this.handler = handler;
+            this.loop = loop;
         }
     }
 
@@ -54,7 +56,12 @@ public class SocketSubscribe {
                             Message message = new Message();
                             message.obj = jsonObject;
                             handler.handler.sendMessage(message);
-                            it.remove();
+                            if (handler.loop > 0){
+                                handler.loop--;
+                                if (handler.loop <= 0) {
+                                    it.remove();
+                                }
+                            }
                         }
                     }
                 }
@@ -78,8 +85,8 @@ public class SocketSubscribe {
         ioSocket.emit(Socket.EVENT_MESSAGE, jsonObject);
     }
 
-    public static void subscribe(String event, Handler callback){
-        handlers.add(new MessageHandler(event, callback));
+    public static void subscribe(String event, int loop, Handler callback){
+        handlers.add(new MessageHandler(event, callback, loop));
     }
 
     public static void destroy(){

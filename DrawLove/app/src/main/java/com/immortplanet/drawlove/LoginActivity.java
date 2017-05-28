@@ -136,7 +136,7 @@ public class LoginActivity extends Activity {
                                 obj.put("userID", currentUser._id);
                                 obj.put("ioSocketToken", jsonObject.getString("ioSocketToken"));
                                 SocketSubscribe.emit("login", obj);
-                                SocketSubscribe.subscribe("login", new Handler() {
+                                SocketSubscribe.subscribe("login", 1, new Handler() {
                                     @Override
                                     public void handleMessage(Message msg){
                                         JSONObject jsonObject = (JSONObject) msg.obj;
