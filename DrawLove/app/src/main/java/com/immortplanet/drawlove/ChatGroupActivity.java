@@ -66,15 +66,13 @@ public class ChatGroupActivity extends Activity {
         //-- if this group is not loaded then load the info
         User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
         //-- find the group instance
-        Group groupInstance = null;
         for (Group g : currentUser.groups) {
             if (g._id.equals(groupID)) {
-                groupInstance = g;
+                chatGroup = g;
                 break;
             }
         }
-        final Group[] g = {groupInstance};
-        if (g[0] != null) {
+        if (chatGroup != null) {
             //-- request the group and latest N message
             JSONObject jsonObject = new JSONObject();
             try {
@@ -95,8 +93,16 @@ public class ChatGroupActivity extends Activity {
                         }
                         JSONArray messages = jsonObject.getJSONArray("messages");
                         for (int i = 0; i < messages.length(); i++) {
-                            g[0].messages.add(new Message(messages.getJSONObject(i)));
+                            chatGroup.messages.add(new Message(messages.getJSONObject(i)));
                         }
+
+                        // Create the adapter that will return a fragment for each fragment of the activity.
+                        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+
+                        // Set up the ViewPager with the sections adapter.
+                        mViewPager = (ViewPager) findViewById(R.id.container);
+                        mViewPager.setAdapter(mSectionsPagerAdapter);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -120,14 +126,6 @@ public class ChatGroupActivity extends Activity {
             });
             request.execute();
         }
-
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
-
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
     }
 
     /**

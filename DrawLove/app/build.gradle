@@ -33,5 +33,6 @@ dependencies {
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:support-v13:25.3.1'
     compile 'com.github.nkzawa:socket.io-client:0.3.0'
+    compile 'com.turki-alkhateeb:materialcolorpicker:1.0.7'
     testCompile 'junit:junit:4.12'
 }

@@ -22,7 +22,8 @@
             <ListView
                 android:id="@+id/liMessages"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:stackFromBottom="true"/>
         </FrameLayout>
 
         <LinearLayout
@@ -71,10 +72,18 @@
                             android:id="@+id/spTools"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:layout_weight="2" />
+                            android:layout_weight="1" />
 
                         <ImageView
-                            android:id="@+id/imageView5"
+                            android:id="@+id/btColorPalette"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:padding="5dp"
+                            android:src="@drawable/paint_palette" />
+
+                        <ImageView
+                            android:id="@+id/btStrokeWeight"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -82,7 +91,7 @@
                             android:src="@drawable/dot_and_circle" />
 
                         <ImageView
-                            android:id="@+id/imageView6"
+                            android:id="@+id/btEmoji"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -90,7 +99,7 @@
                             android:src="@drawable/happy" />
 
                         <ImageView
-                            android:id="@+id/imageView7"
+                            android:id="@+id/btBackGround"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -104,7 +113,8 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:ems="10"
-                        android:inputType="textPersonName" />
+                        android:maxLines="1"
+                        android:imeOptions="actionDone"/>
                 </LinearLayout>
 
                 <ImageView
