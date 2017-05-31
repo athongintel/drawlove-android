@@ -15,7 +15,7 @@ var SocketServices = {
 		io.on('connection', function(socket){
 			socket.on(MESSAGE, function(obj){
 				//-- check all logged in user
-				console.log(obj);
+				// console.log(obj);
 				var events = obj['event'].split(":");
 				var data = JSON.parse(obj['data']);
 				switch (true){
@@ -50,7 +50,7 @@ var SocketServices = {
 											if (!err && message){
 												//-- broad cast the message to people in the same group
 												group.members.some(function(userID){
-													if (userID != socket['user']._id){
+													if (String(userID) != String(socket['user']._id)){
 														//-- check if user is live
 														if (sockets[userID]){
 															sockets[userID].emit(MESSAGE, obj['event'], message);
@@ -59,7 +59,8 @@ var SocketServices = {
 													else{
 														//-- send message ACK
 														obj.data = {'contentType' : -1, '_id': message._id, 'timestamp' : data['timestamp']};
-														socket.emit(MESSAGE, obj['event'], obj['data']);
+														socket.emit(MESSAGE, obj['event'], obj.data);
+														// console.log(obj.data);
 													}
 												});
 											}
