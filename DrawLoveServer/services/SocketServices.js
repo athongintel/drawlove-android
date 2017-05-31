@@ -36,6 +36,7 @@ var SocketServices = {
 					case events[0] == "chat":{
 							var groupID = data['group'];
 							//-- check if user belong to group
+							consoe.log(data);
 							GroupServices.getGroupById(groupID, function(err, group){
 								if (!err && group){
 									if (group.members.indexOf(socket['user']._id) >= 0){
