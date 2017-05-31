@@ -3,6 +3,7 @@ var GroupServices = require('./GroupServices.js');
 var Message = require('../models/Message.js');
 
 const MESSAGE = 'message';
+const DISCONNECT = 'disconnect';
 
 var socketIO;
 var sockets = {};
@@ -34,7 +35,7 @@ var SocketServices = {
 						break;
 
 					case events[0] == "request":{
-							
+
 						}
 						break;
 
@@ -66,7 +67,6 @@ var SocketServices = {
 														//-- send message ACK
 														obj.data = {'contentType' : -1, '_id': message._id, 'timestamp' : data['timestamp']};
 														socket.emit(MESSAGE, obj['event'], obj.data);
-														// console.log(obj.data);
 													}
 												});
 											}
@@ -90,6 +90,9 @@ var SocketServices = {
 					default:
 						break;
 				}
+			});
+			socket.on(DISCONNECT, function(){
+				sockets[socket['user']._id] = null;
 			});
 		});
 	}

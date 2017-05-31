@@ -203,7 +203,7 @@ public class ChatgroupChatFragment extends Fragment{
                     case TEXT_MESSAGE:
                         if (txtMessage.getText().length() > 0){
                             try {
-                                content = Base64.encodeToString(txtMessage.getText().toString().getBytes(), Base64.NO_WRAP);
+                                content = Base64.encodeToString(txtMessage.getText().toString().getBytes(), Base64.DEFAULT);
                                 jsonObject.put("content", content);
                                 txtMessage.setText("");
                                 sendReady = true;
@@ -416,22 +416,6 @@ public class ChatgroupChatFragment extends Fragment{
                         break;
 
                     case TEXT_MESSAGE:
-                        message = new Message(jsonObject);
-                        //-- fix message content
-                        try {
-                            String base64 = jsonObject.getString("content");
-                            message.content = new String(Base64.decode(base64, Base64.NO_WRAP));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        adapter.add(message);
-                        liMessages.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                liMessages.smoothScrollToPosition(adapter.getCount()-1);
-                            }
-                        });
-                        break;
                     case DRAW_MESSAGE:
                         message = new Message(jsonObject);
                         adapter.add(message);
@@ -631,7 +615,7 @@ public class ChatgroupChatFragment extends Fragment{
                     rootView = inflater.inflate(R.layout.message_text, null);
                     TextView txtContent = (TextView) rootView.findViewById(R.id.txtContent);
                     prSent = (ProgressBar) rootView.findViewById(R.id.prSent);
-                    txtContent.setText(new String(Base64.decode(message.content, Base64.NO_WRAP)));
+                    txtContent.setText(new String(Base64.decode(message.content, Base64.DEFAULT)));
 
                     if (currentUser._id.equals(message.sender)){
                         LinearLayout layoutContainer = (LinearLayout) rootView.findViewById(R.id.layoutContainer);
