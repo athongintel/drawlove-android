@@ -11,8 +11,8 @@ import org.json.JSONObject;
 
 public class Message extends DataModel {
 
-    public final int SENDING = 0;
-    public final int SENT = 1;
+    public static final int SENDING = 0;
+    public static final int SENT = 1;
 
     public String _id;
     public int contentType;
@@ -21,6 +21,7 @@ public class Message extends DataModel {
     public String sender;
     public String group;
     public String sentDate;
+    public long timestamp;
 
     public int status;
 

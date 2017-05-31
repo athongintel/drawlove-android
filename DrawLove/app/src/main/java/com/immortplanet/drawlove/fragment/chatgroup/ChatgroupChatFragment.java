@@ -32,6 +32,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -43,6 +44,7 @@ import com.immortplanet.drawlove.model.User;
 import com.immortplanet.drawlove.model.Message;
 import com.immortplanet.drawlove.util.ButtonGroup;
 import com.immortplanet.drawlove.util.ConfirmDialog;
+import com.immortplanet.drawlove.util.MessageHandler;
 import com.immortplanet.drawlove.util.ObjectCallback;
 import com.immortplanet.drawlove.util.SliderDialog;
 import com.immortplanet.drawlove.util.SocketSubscribe;
@@ -72,6 +74,7 @@ public class ChatgroupChatFragment extends Fragment{
 
     Group chatGroup;
     int screenHeightDp;
+    MessageHandler handler;
 
     //-- components
     ListView liMessages;
@@ -132,6 +135,7 @@ public class ChatgroupChatFragment extends Fragment{
         adapter = new MessageAdater(getActivity(), 0, this.chatGroup.messages);
 
         liMessages.setAdapter(adapter);
+        liMessages.setDivider(null);
 
         colorDialog = new ColorChooserDialog(getActivity());
         colorDialog.setTitle("Select pen color");
@@ -179,9 +183,11 @@ public class ChatgroupChatFragment extends Fragment{
                 boolean sendReady = false;
                 JSONObject jsonObject = new JSONObject();
                 String content = "";
+                long timestamp = 0;
                 try {
+                    timestamp = (new Date()).getTime();
                     jsonObject.put("group", chatGroup._id);
-                    jsonObject.put("timestamp", (new Date()).getTime());
+                    jsonObject.put("timestamp", timestamp);
                     jsonObject.put("contentType", selectedMode);
                 }catch (JSONException e) {
                     e.printStackTrace();
@@ -222,6 +228,7 @@ public class ChatgroupChatFragment extends Fragment{
                     m.content = content;
                     m.contentType = selectedMode;
                     m.sender = currentUser._id;
+                    m.timestamp = timestamp;
 
                     adapter.add(m);
                     liMessages.post(new Runnable() {
@@ -369,11 +376,52 @@ public class ChatgroupChatFragment extends Fragment{
         layoutDrawTools.setVisibility(View.GONE);
         txtMessage.setVisibility(View.VISIBLE);
 
-        SocketSubscribe.subscribe("chat:" + chatGroup._id, 0, new Handler(){
+        if (handler == null) handler = SocketSubscribe.subscribe("chat:" + chatGroup._id, 0, new Handler(){
             @Override
             public void handleMessage(android.os.Message msg){
-                //-- TODO: handle message from socket
                 JSONObject jsonObject = (JSONObject) msg.obj;
+                int contentType = -1;
+                try {
+                    contentType = jsonObject.getInt("contentType");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                switch (contentType){
+
+                    case ACK_MESSAGE:
+                        //-- update message status
+                        try {
+                            String _id = jsonObject.getString("_id");
+                            long timestamp = jsonObject.getLong("timestamp");
+                            //-- check messages
+                            for (Message m : chatGroup.messages){
+                                if (timestamp == m.timestamp){
+                                    //-- this is the message to update
+                                    m._id = _id;
+                                    m.status = Message.SENT;
+                                    adapter.notifyDataSetChanged();
+                                    break;
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        break;
+
+                    case TEXT_MESSAGE:
+                    case DRAW_MESSAGE:
+                        Message m = new Message(jsonObject);
+                        adapter.add(m);
+                        liMessages.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                liMessages.smoothScrollToPosition(adapter.getCount()-1);
+                            }
+                        });
+                        break;
+                }
+
             }
         });
 
@@ -551,11 +599,13 @@ public class ChatgroupChatFragment extends Fragment{
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             Message message = messages.get(messages.size() - 1 - position);
             View rootView = null;
+            ProgressBar prSent;
 
             switch (message.contentType){
                 case TEXT_MESSAGE:
                     rootView = inflater.inflate(R.layout.message_text, null);
                     TextView txtContent = (TextView) rootView.findViewById(R.id.txtContent);
+                    prSent = (ProgressBar) rootView.findViewById(R.id.prSent);
                     txtContent.setText(message.content);
 
                     if (currentUser._id.equals(message.sender)){
@@ -564,12 +614,21 @@ public class ChatgroupChatFragment extends Fragment{
                         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) layoutContainer.getLayoutParams();
                         params.gravity = Gravity.RIGHT;
                         layoutContainer.setLayoutParams(params);
+                        prSent.setVisibility(message.status == Message.SENT? View.GONE : View.VISIBLE);
+                        txtContent.setTextColor(Color.WHITE);
+                        txtContent.setBackgroundColor(Color.rgb(223, 61, 130));
+                    }
+                    else{
+                        prSent.setVisibility(View.GONE);
+                        txtContent.setTextColor(Color.BLACK);
+                        txtContent.setBackgroundColor(Color.WHITE);
                     }
                     break;
 
                 case DRAW_MESSAGE:
                     rootView = inflater.inflate(R.layout.message_draw, null);
                     ImageView imgDraw = (ImageView) rootView.findViewById(R.id.imgDraw);
+                    prSent = (ProgressBar) rootView.findViewById(R.id.prSent);
                     //-- set image content
                     if (bitmaps.get(message._id) == null) {
                         bitmaps.put(message._id, Util.decodeBase64(message.content));
@@ -581,6 +640,10 @@ public class ChatgroupChatFragment extends Fragment{
                         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) layoutContainer.getLayoutParams();
                         params.gravity = Gravity.RIGHT;
                         layoutContainer.setLayoutParams(params);
+                        prSent.setVisibility(message.status == Message.SENT? View.GONE : View.VISIBLE);
+                    }
+                    else{
+                        prSent.setVisibility(View.GONE);
                     }
                     break;
 

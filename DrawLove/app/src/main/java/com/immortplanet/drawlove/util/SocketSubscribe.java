@@ -21,24 +21,15 @@ import java.util.LinkedList;
 
 public class SocketSubscribe {
 
-    static class MessageHandler{
-        Handler handler;
-        String event;
-        int loop;
-
-        public MessageHandler(String event, Handler handler, int loop){
-            this.event = event;
-            this.handler = handler;
-            this.loop = loop;
-        }
-    }
-
-    public static Socket ioSocket;
+    public static Socket ioSocket = null;
     private static boolean running;
     private static LinkedList<MessageHandler> handlers;
 
     public static boolean init(){
         try {
+            if (ioSocket != null){
+                ioSocket.disconnect();
+            }
             ioSocket = IO.socket(DrawLoveApplication.HTTP_DOMAIN);
             ioSocket.connect();
             handlers = new LinkedList<>();
@@ -85,8 +76,10 @@ public class SocketSubscribe {
         ioSocket.emit(Socket.EVENT_MESSAGE, jsonObject);
     }
 
-    public static void subscribe(String event, int loop, Handler callback){
-        handlers.add(new MessageHandler(event, callback, loop));
+    public static MessageHandler subscribe(String event, int loop, Handler callback){
+        MessageHandler handler = new MessageHandler(event, callback, loop);
+        handlers.add(handler);
+        return handler;
     }
 
     public static void destroy(){
