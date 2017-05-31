@@ -33,51 +33,51 @@ var SocketServices = {
 						}
 						break;
 
-					case events[0] == "chat":
-                        var groupID = data['group'];
-                        //-- check if user belong to group
-                        GroupServices.getGroupById(groupID, function(err, group){
-                        	if (!err && group){
-                        		if (group.members.indexOf(socket['user']._id) >= 0){
-                        			//-- create new message and save
-                        			var message = new Message();
-                        			message['contentType'] = data['contentType'];
-                        			message['content'] = data['content'];
-                        			message['group'] = groupID;
-                        			message['sender'] = socket['user']._id;
+					case events[0] == "chat":{
+							var groupID = data['group'];
+							//-- check if user belong to group
+							GroupServices.getGroupById(groupID, function(err, group){
+								if (!err && group){
+									if (group.members.indexOf(socket['user']._id) >= 0){
+										//-- create new message and save
+										var message = new Message();
+										message['contentType'] = data['contentType'];
+										message['content'] = data['content'];
+										message['group'] = groupID;
+										message['sender'] = socket['user']._id;
 
-                        			message.save(function(err, message){
-                        				if (!err && message){
-                        					//-- broad cast the message to people in the same group
-                        					group.members.some(function(userID){
-                        						if (userID != socket['user']._id){
-                        							//-- check if user is live
-                        							if (sockets[userID]){
-                        								sockets[userID].emit(MESSAGE, obj['event'], message);
-                        							}
-                        						}
-                        						else{
-                        							//-- send message ACK
-                        							obj.data = {'contentType' : -1, '_id': message._id, 'timestamp' : data['timestamp']};
-                        							socket.emit(MESSAGE, obj['event'], obj);
-                        						}
-                        					});
-                        				}
-                        				else{
-                        					//-- do nothing
-                        				}
-                        			});
-                        			
-                        		}
-                        		else{
-                        			//-- do nothing		
-                        		}
-                        	}
-                        	else{
-                        		//-- do nothing
-                        	}
-                        });
-
+										message.save(function(err, message){
+											if (!err && message){
+												//-- broad cast the message to people in the same group
+												group.members.some(function(userID){
+													if (userID != socket['user']._id){
+														//-- check if user is live
+														if (sockets[userID]){
+															sockets[userID].emit(MESSAGE, obj['event'], message);
+														}
+													}
+													else{
+														//-- send message ACK
+														obj.data = {'contentType' : -1, '_id': message._id, 'timestamp' : data['timestamp']};
+														socket.emit(MESSAGE, obj['event'], obj['data']);
+													}
+												});
+											}
+											else{
+												//-- do nothing
+											}
+										});
+										
+									}
+									else{
+										//-- do nothing		
+									}
+								}
+								else{
+									//-- do nothing
+								}
+							});
+						}
 						break;
 
 					default:

@@ -10,6 +10,7 @@ var UserSchema = Schema(
         email: {type: String, required: true},
         emailToken: {type: String},
         isActivated: {type: Boolean},
+        profilePhoto: {type: String},
         friends : [{type: Schema.ObjectId, ref: 'User'}]
     },
     {
