@@ -33,10 +33,15 @@ var SocketServices = {
 						}
 						break;
 
+					case events[0] == "request":{
+							
+						}
+						break;
+
 					case events[0] == "chat":{
 							var groupID = data['group'];
 							//-- check if user belong to group
-							console.log(data);
+							// console.log(data);
 							GroupServices.getGroupById(groupID, function(err, group){
 								if (!err && group){
 									if (group.members.indexOf(socket['user']._id) >= 0){

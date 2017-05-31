@@ -82,6 +82,10 @@ public class SocketSubscribe {
         return handler;
     }
 
+    public static void unsubscribe(MessageHandler handler){
+        handlers.remove(handler);
+    }
+
     public static void destroy(){
         running = false;
         ioSocket.disconnect();

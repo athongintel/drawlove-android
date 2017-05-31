@@ -4,11 +4,13 @@ import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,7 @@ import com.immortplanet.drawlove.model.User;
 import com.immortplanet.drawlove.util.JsonCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
 import com.immortplanet.drawlove.util.SimpleDialog;
+import com.immortplanet.drawlove.util.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -202,6 +205,13 @@ public class ChatgroupFriendFragment extends Fragment{
             TextView txtStatus = (TextView) thisView.findViewById(R.id.txtStatus);
             ImageView btAction = (ImageView) thisView.findViewById(R.id.btAction);
 
+            ImageView imgPhoto = (ImageView) thisView.findViewById(R.id.imgPhoto);
+            HashMap<String, Bitmap> photoPool = (HashMap<String, Bitmap>) DataSingleton.getDataSingleton().get("photoPool");
+            if (photoPool.get(u._id) == null){
+                photoPool.put(u._id, Util.decodeBase64(u.profilePhoto));
+            }
+            imgPhoto.setImageBitmap(photoPool.get(u._id));
+
             txtChatID.setText(u.chatID);
 //          TODO:  txtStatus.setText("current_status");
             txtStatus.setVisibility(View.GONE);
@@ -244,6 +254,12 @@ public class ChatgroupFriendFragment extends Fragment{
             final TextView txtJoinedDate = (TextView) thisView.findViewById(R.id.txtJoinedDate);
             final TextView txtStatus = (TextView) thisView.findViewById(R.id.txtStatus);
             final ImageView btAction = (ImageView) thisView.findViewById(R.id.btAction);
+            ImageView imgPhoto = (ImageView) thisView.findViewById(R.id.imgPhoto);
+            HashMap<String, Bitmap> photoPool = (HashMap<String, Bitmap>) DataSingleton.getDataSingleton().get("photoPool");
+            if (photoPool.get(u._id) == null){
+                photoPool.put(u._id, Util.decodeBase64(u.profilePhoto));
+            }
+            imgPhoto.setImageBitmap(photoPool.get(u._id));
             btAction.setVisibility(View.GONE);
 
             txtChatID.setText(u.chatID);
@@ -253,7 +269,6 @@ public class ChatgroupFriendFragment extends Fragment{
             for (Request request : chatGroup.requests){
                 if (u._id.equals(request.receiver)) {
                     if ("pending".equals(request.status) || "blocked".equals(request.status)) {
-                        locked = true;
                         if ("pending".equals(request.status)){
                             txtStatus.setText("Pending");
                         }

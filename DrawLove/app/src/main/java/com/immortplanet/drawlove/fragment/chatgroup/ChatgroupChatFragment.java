@@ -11,8 +11,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.media.tv.TvContract;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.ContactsContract;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -44,6 +46,7 @@ import com.immortplanet.drawlove.model.User;
 import com.immortplanet.drawlove.model.Message;
 import com.immortplanet.drawlove.util.ButtonGroup;
 import com.immortplanet.drawlove.util.ConfirmDialog;
+import com.immortplanet.drawlove.util.ImagePopupDialog;
 import com.immortplanet.drawlove.util.MessageHandler;
 import com.immortplanet.drawlove.util.ObjectCallback;
 import com.immortplanet.drawlove.util.SliderDialog;
@@ -89,6 +92,7 @@ public class ChatgroupChatFragment extends Fragment{
     int selectedMode;
     int selectedTool;
     FrameLayout frmCanvas;
+    ProgressBar prPopulating;
 
     //-- tools
     ImageView btColorPalette;
@@ -116,7 +120,7 @@ public class ChatgroupChatFragment extends Fragment{
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_chat_group_chat, container, false);
         liMessages = (ListView) rootView.findViewById(R.id.liMessages);
         btSend = (ImageView) rootView.findViewById(R.id.btSend);
@@ -127,6 +131,8 @@ public class ChatgroupChatFragment extends Fragment{
         txtMessage = (EditText) rootView.findViewById(R.id.txtMessage);
         spTools = (Spinner) rootView.findViewById(R.id.spTools);
         frmCanvas = (FrameLayout) rootView.findViewById(R.id.frmCanvas);
+        prPopulating = (ProgressBar) rootView.findViewById(R.id.prPopulating);
+        prPopulating.setVisibility(View.VISIBLE);
 
         lastColor = Color.BLACK;
         stroke = 15;
@@ -179,7 +185,7 @@ public class ChatgroupChatFragment extends Fragment{
         btSend.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                btSend.setEnabled(false);
                 boolean sendReady = false;
                 JSONObject jsonObject = new JSONObject();
                 String content = "";
@@ -193,13 +199,11 @@ public class ChatgroupChatFragment extends Fragment{
                     e.printStackTrace();
                 }
 
-                System.out.println("selectedMode: " + selectedMode);
-
                 switch (selectedMode){
                     case TEXT_MESSAGE:
                         if (txtMessage.getText().length() > 0){
                             try {
-                                content = txtMessage.getText().toString();
+                                content = Base64.encodeToString(txtMessage.getText().toString().getBytes(), Base64.NO_WRAP);
                                 jsonObject.put("content", content);
                                 txtMessage.setText("");
                                 sendReady = true;
@@ -210,15 +214,16 @@ public class ChatgroupChatFragment extends Fragment{
                         break;
 
                     case DRAW_MESSAGE:
+                        prPopulating.setVisibility(View.VISIBLE);
                         try {
                             content = Util.encodeToBase64(dv.mBitmap);
                             jsonObject.put("content", content);
-                            System.out.print("iamge content: " + content);
                             dv.clearCanvas();
                             sendReady = true;
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        prPopulating.setVisibility(View.GONE);
                         break;
                 }
 
@@ -239,6 +244,7 @@ public class ChatgroupChatFragment extends Fragment{
                     });
                     SocketSubscribe.emit("chat:" + chatGroup._id, jsonObject);
                 }
+                btSend.setEnabled(true);
             }
         });
 
@@ -252,7 +258,6 @@ public class ChatgroupChatFragment extends Fragment{
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(stroke);
-
 
         //-- populate tools
         List<SpinnerItemData> liItems = new ArrayList<>();
@@ -381,6 +386,7 @@ public class ChatgroupChatFragment extends Fragment{
             public void handleMessage(android.os.Message msg){
                 JSONObject jsonObject = (JSONObject) msg.obj;
                 int contentType = -1;
+                Message message;
                 try {
                     contentType = jsonObject.getInt("contentType");
                 } catch (JSONException e) {
@@ -410,9 +416,25 @@ public class ChatgroupChatFragment extends Fragment{
                         break;
 
                     case TEXT_MESSAGE:
+                        message = new Message(jsonObject);
+                        //-- fix message content
+                        try {
+                            String base64 = jsonObject.getString("content");
+                            message.content = new String(Base64.decode(base64, Base64.NO_WRAP));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        adapter.add(message);
+                        liMessages.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                liMessages.smoothScrollToPosition(adapter.getCount()-1);
+                            }
+                        });
+                        break;
                     case DRAW_MESSAGE:
-                        Message m = new Message(jsonObject);
-                        adapter.add(m);
+                        message = new Message(jsonObject);
+                        adapter.add(message);
                         liMessages.post(new Runnable() {
                             @Override
                             public void run() {
@@ -425,6 +447,7 @@ public class ChatgroupChatFragment extends Fragment{
             }
         });
 
+        prPopulating.setVisibility(View.GONE);
         return rootView;
     }
 
@@ -597,16 +620,18 @@ public class ChatgroupChatFragment extends Fragment{
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            Message message = messages.get(messages.size() - 1 - position);
+            final Message message = messages.get(messages.size() - 1 - position);
+//            Message message = messages.get(position);
             View rootView = null;
             ProgressBar prSent;
+            ImageView imgPhoto;
 
             switch (message.contentType){
                 case TEXT_MESSAGE:
                     rootView = inflater.inflate(R.layout.message_text, null);
                     TextView txtContent = (TextView) rootView.findViewById(R.id.txtContent);
                     prSent = (ProgressBar) rootView.findViewById(R.id.prSent);
-                    txtContent.setText(message.content);
+                    txtContent.setText(new String(Base64.decode(message.content, Base64.NO_WRAP)));
 
                     if (currentUser._id.equals(message.sender)){
                         LinearLayout layoutContainer = (LinearLayout) rootView.findViewById(R.id.layoutContainer);
@@ -621,19 +646,25 @@ public class ChatgroupChatFragment extends Fragment{
                     else{
                         prSent.setVisibility(View.GONE);
                         txtContent.setTextColor(Color.BLACK);
-                        txtContent.setBackgroundColor(Color.WHITE);
+                        txtContent.setBackgroundColor(Color.rgb(239, 239, 239));
                     }
                     break;
 
                 case DRAW_MESSAGE:
                     rootView = inflater.inflate(R.layout.message_draw, null);
-                    ImageView imgDraw = (ImageView) rootView.findViewById(R.id.imgDraw);
+                    final ImageView imgDraw = (ImageView) rootView.findViewById(R.id.imgDraw);
                     prSent = (ProgressBar) rootView.findViewById(R.id.prSent);
                     //-- set image content
                     if (bitmaps.get(message._id) == null) {
                         bitmaps.put(message._id, Util.decodeBase64(message.content));
                     }
                     imgDraw.setImageBitmap(bitmaps.get(message._id));
+                    imgDraw.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            new ImagePopupDialog(getActivity(), bitmaps.get(message._id)).show();
+                        }
+                    });
 
                     if (currentUser._id.equals(message.sender)){
                         LinearLayout layoutContainer = (LinearLayout) rootView.findViewById(R.id.layoutContainer);
@@ -649,6 +680,19 @@ public class ChatgroupChatFragment extends Fragment{
 
                 default:
                     break;
+            }
+            imgPhoto = (ImageView) rootView.findViewById(R.id.imgProfile);
+            if (!message.sender.equals(currentUser._id)){
+                int relative = messages.size() - 1 - position;
+                if ((relative == 0) || (!messages.get(relative-1).sender.equals(message.sender))){
+                    //-- show profilePhoto
+                    HashMap<String, Bitmap> photoPool = (HashMap<String, Bitmap>) DataSingleton.getDataSingleton().get("photoPool");
+                    HashMap<String, User> allUsers = (HashMap<String, User>) DataSingleton.getDataSingleton().get("allUsers");
+                    if (photoPool.get(message.sender) == null){
+                        photoPool.put(message.sender, Util.decodeBase64(allUsers.get(message.sender).profilePhoto));
+                    }
+                    imgPhoto.setImageBitmap(photoPool.get(message.sender));
+                }
             }
 
             return rootView;

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -23,12 +24,14 @@ import com.immortplanet.drawlove.util.JsonCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
 import com.immortplanet.drawlove.util.SimpleDialog;
 import com.immortplanet.drawlove.util.SocketSubscribe;
+import com.immortplanet.drawlove.util.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 
 public class LoginActivity extends Activity {
@@ -130,6 +133,9 @@ public class LoginActivity extends Activity {
 
                             DataSingleton.getDataSingleton().put("currentUser", currentUser);
                             DataSingleton.getDataSingleton().put("allUsers", allUsers);
+                            HashMap<String, Bitmap> photoPool = new HashMap<String, Bitmap>();
+                            photoPool.put(currentUser._id, Util.decodeBase64(currentUser.profilePhoto));
+                            DataSingleton.getDataSingleton().put("photoPool", photoPool);
 
                             if (SocketSubscribe.init()) {
                                 JSONObject obj = new JSONObject();

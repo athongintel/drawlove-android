@@ -127,7 +127,9 @@ var UserServices = {
 																d.friends.push(request.sender);
 																d.save(function(err, cur){
 																	if (!err && cur){
-																		result["extra"] = cur;
+																		//-- also update currentUser in session
+																		currentUser.friends.push(request.sender);
+																		result["extra"] = doc;
 																		cb(null, result);
 																	}
 																	else{

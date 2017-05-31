@@ -6,6 +6,13 @@
     tools:context="com.immortplanet.drawlove.fragment.FriendFragment">
 
 
+    <ProgressBar
+        android:id="@+id/prPopulating"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -23,14 +30,17 @@
                 android:id="@+id/liMessages"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:stackFromBottom="true"/>
+                android:background="@android:color/white"
+                android:stackFromBottom="true" />
         </FrameLayout>
 
         <LinearLayout
             android:id="@+id/layoutDraw"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:orientation="vertical">
+            android:background="@color/colorButton"
+            android:orientation="vertical"
+            android:padding="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -113,8 +123,8 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:ems="10"
-                        android:maxLines="1"
-                        android:imeOptions="actionDone"/>
+                        android:imeOptions="actionDone"
+                        android:maxLines="1" />
                 </LinearLayout>
 
                 <ImageView

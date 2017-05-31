@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import android.view.KeyEvent;
@@ -26,12 +27,14 @@ import com.immortplanet.drawlove.model.Request;
 import com.immortplanet.drawlove.util.JsonCallback;
 import com.immortplanet.drawlove.util.HttpRequest;
 import com.immortplanet.drawlove.util.SimpleDialog;
+import com.immortplanet.drawlove.util.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by tom on 5/2/17.
@@ -156,10 +159,18 @@ public class FriendSearchFragment extends Fragment {
             userView = inflater.inflate(R.layout.user_fragment, null);
             TextView txtChatID = (TextView)userView.findViewById(R.id.txtChatID);
             TextView txtJoinedDate = (TextView)userView.findViewById(R.id.txtJoinedDate);
+            ImageView imgPhoto = (ImageView) userView.findViewById(R.id.imgPhoto);
             final TextView txtStatus = (TextView)userView.findViewById(R.id.txtStatus);
             final ImageView btAction = (ImageView)userView.findViewById((R.id.btAction));
             btAction.setVisibility(View.GONE);
             final User currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
+
+            HashMap<String, Bitmap> photoPool = (HashMap<String, Bitmap>) DataSingleton.getDataSingleton().get("photoPool");
+            if (photoPool.get(u._id) == null){
+                photoPool.put(u._id, Util.decodeBase64(u.profilePhoto));
+            }
+            imgPhoto.setImageBitmap(photoPool.get(u._id));
+
             if (currentUser._id.equals(u._id)){
                 txtStatus.setText("Just you :)");
             }

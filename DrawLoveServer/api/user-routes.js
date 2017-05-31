@@ -12,6 +12,24 @@ router.route('/')
 		res.status(200).json(req.session['currentUser']);
 	});
 
+router.route('/update_photo')
+	.post(function(req, res){
+		//-- update current user profile photo
+		UserServices.findUserById(req.session.currentUser._id, function(err, user){
+			if (!err && user){
+				user.profilePhoto = req.body.profilePhoto;
+				user.save(function(err, doc){
+					if (!err && doc){
+						res.status(200).json({});
+					}
+					else{
+						res.status(500).json({});
+					}
+				});
+			}
+		});
+	});
+
 router.route('/get_users')
 	.post(function(req, res){
 		var userIDs = req.body["userIDs"];

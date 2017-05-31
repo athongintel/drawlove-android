@@ -17,6 +17,7 @@ public class User extends DataModel {
     public String chatID;
     public String joinedDate;
     public String email;
+    public String profilePhoto;
     public ArrayList<User> friends;
 
     public ArrayList<Request> sentRequests;
@@ -26,6 +27,7 @@ public class User extends DataModel {
     public User(JSONObject jsonObject){
         try{
             _id = jsonObject.getString("_id");
+            profilePhoto = jsonObject.getString("profilePhoto");
             chatID = jsonObject.getString("chatID");
             email = jsonObject.getString("email");
             joinedDate = AppDateTime.getDateFromID(_id);

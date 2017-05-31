@@ -3,6 +3,7 @@ package com.immortplanet.drawlove.fragment.friend;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +16,10 @@ import android.widget.TextView;
 import com.immortplanet.drawlove.R;
 import com.immortplanet.drawlove.model.DataSingleton;
 import com.immortplanet.drawlove.model.User;
+import com.immortplanet.drawlove.util.Util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by tom on 5/2/17.
@@ -80,6 +83,12 @@ public class FriendFriendFragment extends Fragment {
             TextView txtJoinedDate = (TextView)userView.findViewById(R.id.txtJoinedDate);
             final TextView txtStatus = (TextView)userView.findViewById(R.id.txtStatus);
             final ImageView btAction = (ImageView) userView.findViewById((R.id.btAction));
+            ImageView imgPhoto = (ImageView) userView.findViewById(R.id.imgPhoto);
+            HashMap<String, Bitmap> photoPool = (HashMap<String, Bitmap>) DataSingleton.getDataSingleton().get("photoPool");
+            if (photoPool.get(u._id) == null){
+                photoPool.put(u._id, Util.decodeBase64(u.profilePhoto));
+            }
+            imgPhoto.setImageBitmap(photoPool.get(u._id));
             btAction.setVisibility(View.GONE);
             txtStatus.setVisibility(View.GONE);
             txtJoinedDate.setText("joined on " + u.joinedDate);

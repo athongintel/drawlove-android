@@ -4,6 +4,7 @@
     android:id="@+id/layoutRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@android:color/white"
     android:orientation="vertical"
     android:padding="5dp">
 
@@ -13,20 +14,32 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageView
+        <!--<ImageView-->
+        <!--android:id="@+id/imgProfile"-->
+        <!--android:layout_width="30dp"-->
+        <!--android:layout_height="30dp"-->
+        <!--android:layout_gravity="bottom"-->
+        <!--android:padding="5dp"-->
+        <!--app:srcCompat="@drawable/ic_user_profile" />-->
+
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/imgProfile"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="bottom"
             android:padding="5dp"
-            app:srcCompat="@drawable/ic_user_profile" />
+            android:scaleType="centerCrop"
+            app:civ_border_color="#FFFFFF"
+            app:civ_border_width="0dp" />
 
         <ImageView
             android:id="@+id/imgDraw"
             android:layout_width="120dp"
             android:layout_height="180dp"
             android:background="@drawable/rounded_corner"
+            android:padding="5dp"
             app:srcCompat="@drawable/transparent" />
+
 
         <ProgressBar
             android:id="@+id/prSent"

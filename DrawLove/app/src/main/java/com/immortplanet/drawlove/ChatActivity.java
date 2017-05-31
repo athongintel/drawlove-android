@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.WindowManager;
@@ -13,6 +14,13 @@ import com.immortplanet.drawlove.fragment.AboutFragment;
 import com.immortplanet.drawlove.fragment.ChatGroupFragment;
 import com.immortplanet.drawlove.fragment.FriendFragment;
 import com.immortplanet.drawlove.fragment.SettingFragment;
+import com.immortplanet.drawlove.model.DataSingleton;
+import com.immortplanet.drawlove.model.Request;
+import com.immortplanet.drawlove.model.User;
+import com.immortplanet.drawlove.util.MessageHandler;
+import com.immortplanet.drawlove.util.SocketSubscribe;
+
+import org.json.JSONObject;
 
 public class ChatActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -21,6 +29,9 @@ public class ChatActivity extends Activity
     DrawerLayout drawer;
     boolean backPressedOnce = false;
     private NavigationDrawerFragment mNavigationDrawerFragment;
+
+    MessageHandler requestHandler;
+    User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +47,20 @@ public class ChatActivity extends Activity
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, drawer);
+
+        currentUser = (User) DataSingleton.getDataSingleton().get("currentUser");
+        //-- subscribe to socket events
+        requestHandler = SocketSubscribe.subscribe("request", 0, new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                JSONObject jsonObject = (JSONObject) msg.obj;
+                //-- create request object from this
+                Request request = new Request(jsonObject);
+                if (!currentUser._id.equals(request.sender)){
+                    currentUser.receivedRequests.add(request);
+                }
+            }
+        });
     }
 
     @Override
@@ -44,6 +69,8 @@ public class ChatActivity extends Activity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             if (backPressedOnce) {
+                //-- remove handler
+                SocketSubscribe.unsubscribe(requestHandler);
                 super.onBackPressed();
             } else {
                 backPressedOnce = true;
